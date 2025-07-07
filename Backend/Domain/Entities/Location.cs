@@ -15,7 +15,7 @@ namespace Domain.Entities
         /// <summary>
         /// Описание
         /// </summary>
-        public required string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Тип
