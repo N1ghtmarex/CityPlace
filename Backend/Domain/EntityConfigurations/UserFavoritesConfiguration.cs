@@ -20,7 +20,7 @@ namespace Domain.EntityConfigurations
 
             builder.Property(x => x.UserId).IsRequired();
             builder.HasOne(x => x.User)
-                .WithMany()
+                .WithMany(x => x.UserFavorites)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
