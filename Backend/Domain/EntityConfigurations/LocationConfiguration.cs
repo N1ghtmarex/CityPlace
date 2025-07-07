@@ -13,11 +13,17 @@ namespace Domain.EntityConfigurations
             builder.Property(x => x.Id).IsRequired();
 
             builder.Property(x => x.Name).IsRequired();
+            builder.HasIndex(x => x.Name).IsUnique();
+
             builder.Property(x => x.Description).IsRequired(false);
             builder.Property(x => x.Type).IsRequired();
             builder.Property(x => x.Address)
-            .IsRequired()
-            .HasColumnType("jsonb");
+                .IsRequired()
+                .HasColumnType("jsonb");
+
+            builder.Property(x => x.CreatedAt).IsRequired();
+            builder.Property(x => x.UpdatedAt).IsRequired(false);
+            builder.Property(x => x.IsArchive).IsRequired();
         }
     }
 }

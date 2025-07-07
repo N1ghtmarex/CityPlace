@@ -4,30 +4,26 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Domain.EntityConfigurations
 {
-    internal class UserFavoritesConfiguration : IEntityTypeConfiguration<UserFavorite>
+    internal class PictureConfiguration : IEntityTypeConfiguration<Picture>
     {
-        public void Configure(EntityTypeBuilder<UserFavorite> builder)
+        public void Configure(EntityTypeBuilder<Picture> builder)
         {
-            builder.ToTable("user_favorite");
+            builder.ToTable("picture");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).IsRequired();
 
-            builder.Property(x => x.LocationId).IsRequired();
-            builder.HasOne(x => x.Location)
-                .WithMany()
-                .HasForeignKey(x => x.LocationId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x => x.Path).IsRequired();
+            builder.HasIndex(x => x.Path).IsUnique();
 
             builder.Property(x => x.UserId).IsRequired();
             builder.HasOne(x => x.User)
-                .WithMany(x => x.UserFavorites)
+                .WithMany()
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(x => new { x.LocationId, x.UserId }).IsUnique();
-
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.UpdatedAt).IsRequired(false);
+            builder.Property(x => x.IsArchive).IsRequired();
         }
     }
 }

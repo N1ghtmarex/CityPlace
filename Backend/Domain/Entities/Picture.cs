@@ -3,19 +3,14 @@
 namespace Domain.Entities
 {
     /// <summary>
-    /// Список избранного пользователя
+    /// Фото
     /// </summary>
-    public class UserFavorite : BaseEntity<Ulid>, IHasTrackDateAttribute
+    public class Picture : BaseEntity<Ulid>, IHasTrackDateAttribute, IHasArchiveTrack
     {
         /// <summary>
-        /// Идентификатор локации
+        /// Путь до файла
         /// </summary>
-        public required Ulid LocationId { get; set; }
-
-        /// <summary>
-        /// Локация
-        /// </summary>
-        public Location? Location { get; set; }
+        public required string Path {  get; set; }
 
         /// <summary>
         /// Идентификатор пользователя
@@ -25,7 +20,7 @@ namespace Domain.Entities
         /// <summary>
         /// Пользователь
         /// </summary>
-        public User? User {  get; set; }
+        public User? User { get; set; }
 
         /// <summary>
         /// Дата создания
@@ -36,5 +31,10 @@ namespace Domain.Entities
         /// Дата изменения
         /// </summary>
         public DateTimeOffset? UpdatedAt { get; set; }
+
+        /// <summary>
+        /// Статус архивности
+        /// </summary>
+        public bool IsArchive { get; set; }
     }
 }

@@ -1,11 +1,12 @@
-﻿using Domain.Enums;
+﻿using Domain.Abstractions;
+using Domain.Enums;
 
 namespace Domain.Entities
 {
     /// <summary>
     /// Место
     /// </summary>
-    public class Location : BaseEntity<Guid>
+    public class Location : BaseEntity<Ulid>, IHasTrackDateAttribute, IHasArchiveTrack
     {
         /// <summary>
         /// Наименование
@@ -26,5 +27,30 @@ namespace Domain.Entities
         /// Адрес
         /// </summary>
         public required Address Address { get; set; }
+
+        /// <summary>
+        /// Идентификатор картинки (аватар)
+        /// </summary>
+        public Ulid? PictureId {  get; set; }
+
+        /// <summary>
+        /// Картинка (аватар)
+        /// </summary>
+        public Picture? Picture {  get; set; }
+
+        /// <summary>
+        /// Дата создания
+        /// </summary>
+        public DateTimeOffset CreatedAt { get; init; }
+
+        /// <summary>
+        /// Дата изменения
+        /// </summary>
+        public DateTimeOffset? UpdatedAt { get; set; }
+
+        /// <summary>
+        /// Статус архивности
+        /// </summary>
+        public bool IsArchive { get; set; }
     }
 }
