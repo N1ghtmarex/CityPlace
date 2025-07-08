@@ -10,15 +10,27 @@ namespace Domain.EntityConfigurations
         {
             builder.ToTable("user_favorite");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).IsRequired();
+            builder.Property(x => x.Id)
+                .IsRequired()
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Ulid.Parse(x));
 
-            builder.Property(x => x.LocationId).IsRequired();
+            builder.Property(x => x.LocationId)
+                .IsRequired()
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Ulid.Parse(x));
             builder.HasOne(x => x.Location)
                 .WithMany()
                 .HasForeignKey(x => x.LocationId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(x => x.UserId).IsRequired();
+            builder.Property(x => x.UserId)
+                .IsRequired()
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Ulid.Parse(x));
             builder.HasOne(x => x.User)
                 .WithMany(x => x.UserFavorites)
                 .HasForeignKey(x => x.UserId)

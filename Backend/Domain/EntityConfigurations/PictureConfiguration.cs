@@ -10,12 +10,20 @@ namespace Domain.EntityConfigurations
         {
             builder.ToTable("picture");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).IsRequired();
+            builder.Property(x => x.Id)
+                .IsRequired()
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Ulid.Parse(x));
 
             builder.Property(x => x.Path).IsRequired();
             builder.HasIndex(x => x.Path).IsUnique();
 
-            builder.Property(x => x.UserId).IsRequired();
+            builder.Property(x => x.UserId)
+                .IsRequired()
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Ulid.Parse(x));
             builder.HasOne(x => x.User)
                 .WithMany()
                 .HasForeignKey(x => x.UserId)

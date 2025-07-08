@@ -10,7 +10,11 @@ namespace Domain.EntityConfigurations
         {
             builder.ToTable("location");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).IsRequired();
+            builder.Property(x => x.Id)
+                .IsRequired()
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Ulid.Parse(x));
 
             builder.Property(x => x.Name).IsRequired();
             builder.HasIndex(x => x.Name).IsUnique();
@@ -20,6 +24,12 @@ namespace Domain.EntityConfigurations
             builder.Property(x => x.Address)
                 .IsRequired()
                 .HasColumnType("jsonb");
+
+            builder.Property(x => x.PictureId)
+                .IsRequired(false)
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Ulid.Parse(x));
 
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.UpdatedAt).IsRequired(false);

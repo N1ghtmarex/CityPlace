@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250707074720_Init")]
+    [Migration("20250708051352_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -93,9 +93,8 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Domain.Entities.Location", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
                         .HasColumnName("id");
 
                     b.Property<Address>("Address")
@@ -103,35 +102,110 @@ namespace Domain.Migrations
                         .HasColumnType("jsonb")
                         .HasColumnName("address");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("Description")
                         .HasColumnType("text")
                         .HasColumnName("description");
+
+                    b.Property<bool>("IsArchive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_archive");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
 
+                    b.Property<string>("PictureId")
+                        .HasColumnType("text")
+                        .HasColumnName("picture_id");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer")
                         .HasColumnName("type");
 
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
                     b.HasKey("Id")
                         .HasName("pk_location");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_location_name");
+
+                    b.HasIndex("PictureId")
+                        .HasDatabaseName("ix_location_picture_id");
 
                     b.ToTable("location", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Picture", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsArchive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_archive");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("path");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_picture");
+
+                    b.HasIndex("Path")
+                        .IsUnique()
+                        .HasDatabaseName("ix_picture_path");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_picture_user_id");
+
+                    b.ToTable("picture", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
                         .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsArchive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_archive");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer")
                         .HasColumnName("role");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -150,29 +224,61 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Domain.Entities.UserFavorite", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("LocationId")
-                        .HasColumnType("uuid")
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("LocationId")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("location_id");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
                         .HasName("pk_user_favorite");
 
-                    b.HasIndex("LocationId")
-                        .HasDatabaseName("ix_user_favorite_location_id");
-
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_user_favorite_user_id");
 
+                    b.HasIndex("LocationId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_favorite_location_id_user_id");
+
                     b.ToTable("user_favorite", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Location", b =>
+                {
+                    b.HasOne("Domain.Entities.Picture", "Picture")
+                        .WithMany()
+                        .HasForeignKey("PictureId")
+                        .HasConstraintName("fk_location_picture_picture_id");
+
+                    b.Navigation("Picture");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Picture", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_picture_user_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserFavorite", b =>
