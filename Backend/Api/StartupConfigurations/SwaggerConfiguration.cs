@@ -40,7 +40,7 @@ namespace Api.StartupConfigurations
                                 TokenUrl = new Uri(configuration.BaseUrl + $"/realms/{configuration.Realm}/protocol/openid-connect/token"),
                                 Scopes = new Dictionary<string, string>
                                 {
-                                    { scopesConfiguration.AdminScopeName, "CityTalk.Admin.API" },
+                                    { scopesConfiguration.AdminScopeName, "CityPlace.Admin.API" },
                                     { "openid", "Identifier" },
                                     { "roles", "Roles User" },
                                     { "profile", "Profile identity user" },
@@ -76,7 +76,7 @@ namespace Api.StartupConfigurations
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/admin/swagger.json", "CityTalk.Admin.API");
+                options.SwaggerEndpoint("/swagger/admin/swagger.json", "CityPlace.Admin.API");
                 options.OAuthAppName("Swagger Client");
                 options.OAuthUsePkce();
             });
