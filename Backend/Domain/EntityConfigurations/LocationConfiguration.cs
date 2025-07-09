@@ -25,12 +25,6 @@ namespace Domain.EntityConfigurations
                 .IsRequired()
                 .HasColumnType("jsonb");
 
-            builder.Property(x => x.PictureId)
-                .IsRequired(false)
-                .HasConversion(
-                    x => x.ToString(),
-                    x => Ulid.Parse(x));
-
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.UpdatedAt).IsRequired(false);
             builder.Property(x => x.IsArchive).IsRequired();

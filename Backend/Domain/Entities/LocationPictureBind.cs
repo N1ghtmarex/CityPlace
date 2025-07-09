@@ -1,37 +1,36 @@
 ﻿using Domain.Abstractions;
-using Domain.Enums;
 
 namespace Domain.Entities
 {
     /// <summary>
-    /// Место
+    /// Изображения локации
     /// </summary>
-    public class Location : BaseEntity<Ulid>, IHasTrackDateAttribute, IHasArchiveTrack
+    public class LocationPictureBind : BaseEntity<Ulid>, IHasTrackDateAttribute, IHasArchiveTrack
     {
         /// <summary>
-        /// Наименование
+        /// Идентификатор локации
         /// </summary>
-        public required string Name { get; set; }
+        public required Ulid LocationId { get; init; }
 
         /// <summary>
-        /// Описание
+        /// Локация
         /// </summary>
-        public string? Description { get; set; }
+        public Location? Location { get; init; }
 
         /// <summary>
-        /// Тип
+        /// Идентификатор изображения
         /// </summary>
-        public required LocationType Type { get; set; }
+        public required Ulid PictureId { get; init; }
 
         /// <summary>
-        /// Адрес
+        /// Изображение
         /// </summary>
-        public required Address Address { get; set; }
+        public Picture? Picture { get; init; }
 
         /// <summary>
-        /// Изображения локации
+        /// Является ли обложкой локации
         /// </summary>
-        public ICollection<LocationPictureBind>? LocationPictures { get; set; }
+        public required bool IsAvatar { get; set; }
 
         /// <summary>
         /// Дата создания
