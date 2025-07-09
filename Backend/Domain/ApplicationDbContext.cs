@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.Abstractions;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -18,16 +19,19 @@ namespace Domain
 
         public override int SaveChanges()
         {
+            UpdateDateTrack();
             return base.SaveChanges();
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new())
         {
+            UpdateDateTrack();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
+            UpdateDateTrack();
             return base.SaveChangesAsync(cancellationToken);
         }
 
@@ -40,6 +44,17 @@ namespace Domain
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSnakeCaseNamingConvention();
+        }
+
+        private void UpdateDateTrack()
+        {
+            var entries = ChangeTracker.Entries<IHasTrackDateAttribute>()
+                .Where(x => x.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
         }
     }
 }
