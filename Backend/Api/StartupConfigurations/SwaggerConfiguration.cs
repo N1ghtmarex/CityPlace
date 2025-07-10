@@ -1,4 +1,5 @@
 ﻿using Api.StartupConfigurations.Models;
+using Api.StartupConfigurations.Options;
 using Keycloak.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -26,6 +27,8 @@ namespace Api.StartupConfigurations
                     {
                         var doc = XDocument.Load(xmlFile);
                         options.IncludeXmlComments(() => new XPathDocument(doc.CreateReader()), includeControllerXmlComments: true);
+
+                        options.SchemaFilter<UlidSchemaFilter>();
                     });
 
                 options.AddSecurityDefinition(KeycloakAuthConfiguration.AdminApiScheme,
