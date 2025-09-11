@@ -24,9 +24,14 @@ namespace Domain.Entities
         public required LocationType Type { get; set; }
 
         /// <summary>
+        /// Идентификатор адреса
+        /// </summary>
+        public required Ulid AddressId { get; set; }
+
+        /// <summary>
         /// Адрес
         /// </summary>
-        public required Address Address { get; set; }
+        public Address? Address { get; set; }
 
         /// <summary>
         /// Изображения локации

@@ -21,9 +21,15 @@ namespace Domain.EntityConfigurations
 
             builder.Property(x => x.Description).IsRequired(false);
             builder.Property(x => x.Type).IsRequired();
-            builder.Property(x => x.Address)
+            builder.Property(x => x.AddressId)
                 .IsRequired()
-                .HasColumnType("jsonb");
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Ulid.Parse(x));
+            builder.HasOne(x => x.Address)
+                .WithMany()
+                .HasForeignKey(x => x.AddressId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.UpdatedAt).IsRequired(false);
