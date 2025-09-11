@@ -1,18 +1,34 @@
-﻿using Application.Abstractions.Models;
+﻿using Abstractions;
+using Application.Abstractions.Models;
 using Application.Locations.Commands;
 using Core.Exceptions;
 using Domain;
 using Domain.Entities;
+using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Locations.Handlers
 {
-    internal class LocationCommandsHandler(ApplicationDbContext dbContext) :
+    internal class LocationCommandsHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext) :
         IRequestHandler<CreateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>, IRequestHandler<UpdateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>
     {
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
         {
+            if (httpContext.IdentityUserId == null)
+            {
+                throw new BusinessLogicException("Не задан идентификатор пользователя внешней системы!");
+            }
+
+            var user = await dbContext.Users
+                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId))
+                ?? throw new ObjectNotFoundException($"Пользователь с идентификатором внешней системы \"{httpContext.IdentityUserId}\" не найден!");
+
+            if (user.Role != UserRole.Admin)
+            {
+                throw new ForbiddenException("Только администратор может добавлять новые локации!");
+            }
+
             var address = await dbContext.Addresses
                 .SingleOrDefaultAsync(x => x.Region == request.Body.Address.Region && x.District == request.Body.Address.District
                     && x.Settlement == request.Body.Address.Settlement && x.PlanningStructure == request.Body.Address.PlanningStructure && x.House == request.Body.Address.House
@@ -60,20 +76,30 @@ namespace Application.Locations.Handlers
             };
 
             var createdLocation = await dbContext.AddAsync(locationToCreate, cancellationToken);
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             return new CreatedOrUpdatedEntityViewModel(createdLocation.Entity.Id);
         }
 
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(UpdateLocationCommand request, CancellationToken cancellationToken)
         {
-            var existsLocation = await dbContext.Locations
-                .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken);
-
-            if (existsLocation == null)
+            if (httpContext.IdentityUserId == null)
             {
-                throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
+                throw new BusinessLogicException("Не задан идентификатор пользователя внешней системы!");
             }
+
+            var user = await dbContext.Users
+                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId))
+                ?? throw new ObjectNotFoundException($"Пользователь с идентификатором внешней системы \"{httpContext.IdentityUserId}\" не найден!");
+
+            if (user.Role != UserRole.Admin)
+            {
+                throw new ForbiddenException("Только администратор может редактировать локации!");
+            }
+
+            var existsLocation = await dbContext.Locations
+                .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
+                ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
 
             var address = await dbContext.Addresses
                 .SingleOrDefaultAsync(x => x.Region == request.Body.Address.Region && x.District == request.Body.Address.District
