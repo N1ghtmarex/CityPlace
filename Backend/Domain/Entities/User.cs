@@ -9,6 +9,10 @@ namespace Domain.Entities
     public class User : BaseEntity<Ulid>, IHasTrackDateAttribute, IHasArchiveTrack
     {
         /// <summary>
+        /// Идентификатор пользователя внешней системы
+        /// </summary>
+        public required Guid ExternalUserId { get; set; }
+        /// <summary>
         /// Имя пользователя
         /// </summary>
         public required string Username { get; set; }

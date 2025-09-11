@@ -21,18 +21,10 @@ namespace Application.Users.Handlers
             {
                 throw new BusinessLogicException($"Пользователь с именем \"{userWithSameUsername.Username}\" уже существует!");
             }
-
-            var userToCreate = new User
-            {
-                Id = Ulid.NewUlid(),
-                Username = request.Body.Username,
-                Role = UserRole.User,
-                CreatedAt = DateTime.UtcNow
-            };
-
+            
             var createKeycloakUserModel = new CreateKeyckloakUserModel
             {
-                UserName = userToCreate.Username,
+                UserName = request.Body.Username,
                 Email = request.Body.Email,
                 FirstName = request.Body.FirstName,
                 LastName = request.Body.LastName,
@@ -48,6 +40,15 @@ namespace Application.Users.Handlers
             };
 
             var keycloakUserId = await identityService.CreateUserAsync(createKeycloakUserModel, cancellationToken);
+
+            var userToCreate = new User
+            {
+                Id = Ulid.NewUlid(),
+                ExternalUserId = Guid.Parse(keycloakUserId),
+                Username = request.Body.Username,
+                Role = UserRole.User,
+                CreatedAt = DateTime.UtcNow
+            };
 
             var createdUser = await dbContext.AddAsync(userToCreate, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
