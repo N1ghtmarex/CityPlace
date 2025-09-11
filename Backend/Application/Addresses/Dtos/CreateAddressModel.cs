@@ -1,14 +1,10 @@
 ﻿namespace Application.Addresses.Dtos
 {
     /// <summary>
-    /// Модель адреса
+    /// Модель добавления адреса
     /// </summary>
-    public class AddressViewModel
+    public class CreateAddressModel
     {
-        /// <summary>
-        /// Идентификатор
-        /// </summary>
-        public required Ulid Id { get; init; }
         /// <summary>
         /// Субъект РФ
         /// </summary>

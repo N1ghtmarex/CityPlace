@@ -29,11 +29,6 @@ namespace Application.Locations.Dtos
         public required LocationType Type { get; init; }
 
         /// <summary>
-        /// Идентификатор адреса
-        /// </summary>
-        public required Ulid AddressId { get; init; }
-
-        /// <summary>
         /// Модель адреса
         /// </summary>
         public required AddressViewModel Address { get; init; }

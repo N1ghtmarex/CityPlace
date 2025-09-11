@@ -24,6 +24,6 @@ namespace Application.Locations.Dtos
         /// <summary>
         /// Адрес
         /// </summary>
-        public required AddressViewModel Address { get; init; }
+        public required CreateAddressModel Address { get; init; }
     }
 }

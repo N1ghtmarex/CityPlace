@@ -22,9 +22,9 @@ namespace Application.Locations.Handlers
                     Id = x.Id,
                     Name = x.Name,
                     Description = x.Description,
-                    AddressId = x.AddressId,
                     Address = new AddressViewModel
                     {
+                        Id = x.AddressId,
                         Region = x.Address!.Region,
                         District = x.Address!.District,
                         Appartment = x.Address!.Appartment,
@@ -55,9 +55,9 @@ namespace Application.Locations.Handlers
                     Id = x.Id,
                     Name = x.Name,
                     Description = x.Description,
-                    AddressId = x.AddressId,
                     Address = new AddressViewModel
                     {
+                        Id = x.AddressId,
                         Region = x.Address!.Region,
                         District = x.Address!.District,
                         Appartment = x.Address!.Appartment,
