@@ -26,7 +26,7 @@ namespace Application.Users.Handlers
             {
                 Id = Ulid.NewUlid(),
                 Username = request.Body.Username,
-                Role = UserRole.Admin,
+                Role = UserRole.User,
                 CreatedAt = DateTime.UtcNow
             };
 
