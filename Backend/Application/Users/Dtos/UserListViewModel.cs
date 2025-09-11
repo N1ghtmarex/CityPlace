@@ -1,4 +1,4 @@
-﻿namespace Application.Abstractions.Models
+﻿namespace Application.Users.Dtos
 {
     /// <summary>
     /// Модель списка профилей пользователей

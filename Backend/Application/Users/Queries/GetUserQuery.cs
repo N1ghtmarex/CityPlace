@@ -1,4 +1,4 @@
-﻿using Application.Abstractions.Models;
+﻿using Application.Users.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

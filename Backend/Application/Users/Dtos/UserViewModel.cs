@@ -1,6 +1,6 @@
 ﻿using Domain.Enums;
 
-namespace Application.Abstractions.Models
+namespace Application.Users.Dtos
 {
     /// <summary>
     /// Модель профиля пользователя

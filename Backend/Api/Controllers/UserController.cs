@@ -1,6 +1,7 @@
 ﻿using Api.StartupConfigurations;
 using Application.Abstractions.Models;
 using Application.Users.Commands;
+using Application.Users.Dtos;
 using Application.Users.Queries;
 using Core.EntityFramework.Features.SearchPagination.Models;
 using MediatR;
