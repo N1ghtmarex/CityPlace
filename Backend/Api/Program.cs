@@ -6,6 +6,7 @@ using Api.StartupConfigurations;
 using Api.StartupConfigurations.Options;
 using Application;
 using Domain;
+using Infrastructure;
 using Keycloak;
 using Keycloak.Configurations;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.RegisterKeycloakServices();
 builder.Services.RegisterDataAccessService(builder.Configuration);
 builder.Services.RegisterUseCasesService();
+builder.Services.RegisterInfrastructureServices();
 
 builder.Services.ConfigureOptions<KeycloakConfigurationSetup>();
 builder.Services.ConfigureOptions<KeycloakScopesConfigurationSetup>();

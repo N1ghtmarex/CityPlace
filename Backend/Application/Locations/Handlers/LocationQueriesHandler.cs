@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Locations.Handlers
 {
-    internal class LocationQueriesHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext) :
+    internal class LocationQueriesHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext, IUserService userService) :
         IRequestHandler<GetLocationQuery, LocationViewModel>, IRequestHandler<GetLocationsListQuery, PagedResult<LocationListViewModel>>,
         IRequestHandler<GetFavoriteLocationListQuery, PagedResult<LocationListViewModel>>
     {
@@ -76,14 +76,7 @@ namespace Application.Locations.Handlers
 
         public async Task<PagedResult<LocationListViewModel>> Handle(GetFavoriteLocationListQuery request, CancellationToken cancellationToken)
         {
-            if (httpContext.IdentityUserId == null)
-            {
-                throw new BusinessLogicException("Не задан идентификатор пользователя внешней системы!");
-            }
-
-            var user = await dbContext.Users
-                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId), cancellationToken)
-                ?? throw new ObjectNotFoundException($"Пользователь с идентификатором внешней системы \"{httpContext.IdentityUserId}\" не найден!");
+            var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
 
             var userFavoriteQuery = dbContext.UserFavorites
                 .Include(x => x.Location)

@@ -10,20 +10,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Locations.Handlers
 {
-    internal class LocationCommandsHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext) :
+    internal class LocationCommandsHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext, IUserService userService) :
         IRequestHandler<CreateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>, IRequestHandler<UpdateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>,
         IRequestHandler<AddOrRemoveFavoriteLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>
     {
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
         {
-            if (httpContext.IdentityUserId == null)
-            {
-                throw new BusinessLogicException("Не задан идентификатор пользователя внешней системы!");
-            }
-
-            var user = await dbContext.Users
-                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId), cancellationToken)
-                ?? throw new ObjectNotFoundException($"Пользователь с идентификатором внешней системы \"{httpContext.IdentityUserId}\" не найден!");
+            var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
 
             if (user.Role != UserRole.Admin)
             {
@@ -84,14 +77,7 @@ namespace Application.Locations.Handlers
 
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(UpdateLocationCommand request, CancellationToken cancellationToken)
         {
-            if (httpContext.IdentityUserId == null)
-            {
-                throw new BusinessLogicException("Не задан идентификатор пользователя внешней системы!");
-            }
-
-            var user = await dbContext.Users
-                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId), cancellationToken)
-                ?? throw new ObjectNotFoundException($"Пользователь с идентификатором внешней системы \"{httpContext.IdentityUserId}\" не найден!");
+            var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
 
             if (user.Role != UserRole.Admin)
             {
@@ -142,14 +128,7 @@ namespace Application.Locations.Handlers
 
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(AddOrRemoveFavoriteLocationCommand request, CancellationToken cancellationToken)
         {
-            if (httpContext.IdentityUserId == null)
-            {
-                throw new BusinessLogicException("Не задан идентификатор пользователя внешней системы!");
-            }
-
-            var user = await dbContext.Users
-                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId), cancellationToken)
-                ?? throw new ObjectNotFoundException($"Пользователь с идентификатором внешней системы \"{httpContext.IdentityUserId}\" не найден!");
+            var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
 
             var location = await dbContext.Locations
                 .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
