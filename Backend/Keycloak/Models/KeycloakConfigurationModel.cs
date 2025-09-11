@@ -11,6 +11,16 @@
         public required string BaseUrl { get; set; }
 
         /// <summary>
+        /// ClientId (Backend)
+        /// </summary>
+        public required string BackendClientId { get; set; }
+
+        /// <summary>
+        /// ClientSecret (credentials) (Backend)
+        /// </summary>
+        public required string BackendClientSecret { get; set; }
+
+        /// <summary>
         /// ClientId (name)
         /// </summary>
         public required string ClientId { get; set; }

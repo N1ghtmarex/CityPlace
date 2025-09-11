@@ -61,10 +61,10 @@ namespace Keycloak.Clients
             var tokenResponse = await _tokenManager
                 .GetAccessToken(_credentialStrategy, new OidcClientCredentialRequest
                 {
-                    ClientId = _configuration.ClientId,
-                    ClientSecret = _configuration.ClientSecret,
+                    ClientId = _configuration.BackendClientId,
+                    ClientSecret = _configuration.BackendClientSecret,
                     Scopes = Scopes!,
-                    TokenEndpointUrl = _configuration.BaseUrl + $"/realms/master/protocol/openid-connect/token"
+                    TokenEndpointUrl = _configuration.BaseUrl + $"/realms/{_configuration.Realm}/protocol/openid-connect/token"
                 });
             _httpClient.SetBearerToken(tokenResponse.AccessToken);
         }

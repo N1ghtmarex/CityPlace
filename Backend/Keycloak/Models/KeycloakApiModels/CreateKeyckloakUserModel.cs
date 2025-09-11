@@ -40,5 +40,21 @@ namespace Keycloak.Models.KeycloakApiModels
         /// </summary>
         [JsonPropertyName("email")]
         public string? Email { get; set; }
+
+        /// <summary>
+        /// Учетные данные пользователя (необязательный параметр)
+        /// </summary>
+        [JsonPropertyName("credentials")]
+        public List<Credentials>? Credentials { get; set; }
+    }
+
+    public class Credentials
+    {
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }
+        [JsonPropertyName("value")]
+        public string? Value { get; set; }
+        [JsonPropertyName("temporary")]
+        public bool Temporary { get; set; }
     }
 }
