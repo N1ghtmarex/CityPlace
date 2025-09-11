@@ -81,7 +81,7 @@ namespace Api.Controllers
         /// <param name="query">Модель запроса</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        [HttpGet("favoreite")]
+        [HttpGet("favorite")]
         public async Task<PagedResult<LocationListViewModel>> GetFavoriteLocations([FromQuery] GetFavoriteLocationListQuery query, CancellationToken cancellationToken)
         {
             return await sender.Send(query, cancellationToken);
