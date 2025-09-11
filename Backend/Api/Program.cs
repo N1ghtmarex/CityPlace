@@ -1,4 +1,6 @@
+using Abstractions;
 using Api.Extesions;
+using Api.Http;
 using Api.Middlewares;
 using Api.StartupConfigurations;
 using Api.StartupConfigurations.Options;
@@ -32,6 +34,8 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.ConfigureSwagger();
 
+builder.Services.AddScoped<ICurrentHttpContextAccessor, CurrentHttpContextAccessor>();
+
 var app = builder.Build();
 
 app.SetConnectionStringEnvironment(app.Configuration.GetConnectionString("DbConnection"));
@@ -46,5 +50,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<ContextSetterMiddleware>();
 
 app.Run();
