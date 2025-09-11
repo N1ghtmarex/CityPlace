@@ -61,5 +61,18 @@ namespace Api.Controllers
         {
             return await sender.Send(command, cancellationToken);
         }
+
+        /// <summary>
+        /// Добавление или удаление локации из избранного
+        /// </summary>
+        /// <param name="command">Модель запроса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        [HttpPost("favorite/{LocationId}")]
+        public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> AddOrRemoveFavoriteLocation([FromQuery] AddOrRemoveFavoriteLocationCommand command,
+            CancellationToken cancellationToken)
+        {
+            return await sender.Send(command, cancellationToken);
+        }
     }
 }

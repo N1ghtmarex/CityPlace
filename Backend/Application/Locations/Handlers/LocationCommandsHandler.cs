@@ -11,7 +11,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Locations.Handlers
 {
     internal class LocationCommandsHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext) :
-        IRequestHandler<CreateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>, IRequestHandler<UpdateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>
+        IRequestHandler<CreateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>, IRequestHandler<UpdateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>,
+        IRequestHandler<AddOrRemoveFavoriteLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>
     {
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
         {
@@ -21,7 +22,7 @@ namespace Application.Locations.Handlers
             }
 
             var user = await dbContext.Users
-                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId))
+                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId), cancellationToken)
                 ?? throw new ObjectNotFoundException($"Пользователь с идентификатором внешней системы \"{httpContext.IdentityUserId}\" не найден!");
 
             if (user.Role != UserRole.Admin)
@@ -89,7 +90,7 @@ namespace Application.Locations.Handlers
             }
 
             var user = await dbContext.Users
-                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId))
+                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId), cancellationToken)
                 ?? throw new ObjectNotFoundException($"Пользователь с идентификатором внешней системы \"{httpContext.IdentityUserId}\" не найден!");
 
             if (user.Role != UserRole.Admin)
@@ -137,6 +138,48 @@ namespace Application.Locations.Handlers
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return new CreatedOrUpdatedEntityViewModel(existsLocation.Id);
+        }
+
+        public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(AddOrRemoveFavoriteLocationCommand request, CancellationToken cancellationToken)
+        {
+            if (httpContext.IdentityUserId == null)
+            {
+                throw new BusinessLogicException("Не задан идентификатор пользователя внешней системы!");
+            }
+
+            var user = await dbContext.Users
+                .SingleOrDefaultAsync(x => x.ExternalUserId == Guid.Parse(httpContext.IdentityUserId), cancellationToken)
+                ?? throw new ObjectNotFoundException($"Пользователь с идентификатором внешней системы \"{httpContext.IdentityUserId}\" не найден!");
+
+            var location = await dbContext.Locations
+                .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
+                ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
+
+            var userLocationBind = await dbContext.UserFavorites
+                .SingleOrDefaultAsync(x => x.UserId == user.Id && x.LocationId == location.Id, cancellationToken);
+
+            if (userLocationBind == null)
+            {
+                var userLocationBindToCreate = new UserFavorite
+                {
+                    Id = Ulid.NewUlid(),
+                    LocationId = location.Id,
+                    UserId = user.Id,
+                    CreatedAt = DateTime.UtcNow,
+                };
+
+                var createdUserLocationBind = await dbContext.AddAsync(userLocationBindToCreate, cancellationToken);
+                await dbContext.SaveChangesAsync(cancellationToken);
+
+                return new CreatedOrUpdatedEntityViewModel(createdUserLocationBind.Entity.Id);
+            }
+            else
+            {
+                dbContext.Remove(userLocationBind);
+                await dbContext.SaveChangesAsync(cancellationToken);
+
+                return new CreatedOrUpdatedEntityViewModel(userLocationBind.Id);
+            }
         }
     }
 }
