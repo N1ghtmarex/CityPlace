@@ -1,4 +1,5 @@
 ﻿using Application.Addresses.Dtos;
+using Application.Pictures.Dtos;
 using Domain.Enums;
 
 namespace Application.Locations.Dtos
@@ -32,5 +33,6 @@ namespace Application.Locations.Dtos
         /// Модель адреса
         /// </summary>
         public required AddressViewModel Address { get; init; }
+        public List<PictureViewModel>? Pictures { get; init; }
     }
 }

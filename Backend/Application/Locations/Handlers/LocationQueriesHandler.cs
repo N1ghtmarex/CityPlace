@@ -2,6 +2,7 @@
 using Application.Addresses.Dtos;
 using Application.Locations.Dtos;
 using Application.Locations.Queries;
+using Application.Pictures.Dtos;
 using Core.EntityFramework.Features.SearchPagination;
 using Core.EntityFramework.Features.SearchPagination.Models;
 using Core.Exceptions;
@@ -34,7 +35,16 @@ namespace Application.Locations.Handlers
                         PlanningStructure = x.Address!.PlanningStructure,
                         Settlement = x.Address!.Settlement
                     },
-                    Type = x.Type
+                    Type = x.Type,
+                    Pictures = x.LocationPictures!.Select(p => new PictureViewModel
+                    {
+                        Id = p.PictureId,
+                        IsAvatar = p.IsAvatar,
+                        Path = p.Picture!.Path,
+                        CreatedAt = p.CreatedAt,
+                        UserId = p.Picture.UserId
+                    })
+                    .ToList()
                 })
                 .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
                 ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
@@ -67,7 +77,16 @@ namespace Application.Locations.Handlers
                         PlanningStructure = x.Address!.PlanningStructure,
                         Settlement = x.Address!.Settlement
                     },
-                    Type = x.Type
+                    Type = x.Type,
+                    Pictures = x.LocationPictures!.Select(p => new PictureViewModel
+                    {
+                        Id = p.PictureId,
+                        IsAvatar = p.IsAvatar,
+                        Path = p.Picture!.Path,
+                        CreatedAt = p.CreatedAt,
+                        UserId = p.Picture.UserId
+                    })
+                    .ToList()
                 })
                 .ToListAsync(cancellationToken);
 
