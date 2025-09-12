@@ -185,6 +185,8 @@ namespace Application.Locations.Handlers
 
             locationPicture.IsAvatar = true;
 
+            await dbContext.SaveChangesAsync(cancellationToken);
+
             return new CreatedOrUpdatedEntityViewModel(location.Id);
         }
     }
