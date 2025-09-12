@@ -12,7 +12,8 @@ namespace Application.Locations.Handlers
 {
     internal class LocationCommandsHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext, IUserService userService) :
         IRequestHandler<CreateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>, IRequestHandler<UpdateLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>,
-        IRequestHandler<AddOrRemoveFavoriteLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>
+        IRequestHandler<AddOrRemoveFavoriteLocationCommand, CreatedOrUpdatedEntityViewModel<Ulid>>, 
+        IRequestHandler<SetLocationAvatarCommand, CreatedOrUpdatedEntityViewModel<Ulid>>
     {
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
         {
@@ -159,6 +160,32 @@ namespace Application.Locations.Handlers
 
                 return new CreatedOrUpdatedEntityViewModel(userLocationBind.Id);
             }
+        }
+
+        public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(SetLocationAvatarCommand request, CancellationToken cancellationToken)
+        {
+            var location = await dbContext.Locations
+                .Include(x => x.LocationPictures)
+                .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
+                ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
+
+            var locationPicture = location.LocationPictures!
+                .SingleOrDefault(x => x.PictureId == request.PictureId)
+                ?? throw new ObjectNotFoundException(
+                    $"Изображение с идентификатором \"{request.PictureId}\" не принадлежит локации с идентификатором \"{request.LocationId}\"!"
+                    );
+
+            var currentLocationAvatar = location.LocationPictures!
+                .SingleOrDefault(x => x.IsAvatar);
+
+            if (currentLocationAvatar != null)
+            {
+                currentLocationAvatar.IsAvatar = false;
+            }
+
+            locationPicture.IsAvatar = true;
+
+            return new CreatedOrUpdatedEntityViewModel(location.Id);
         }
     }
 }

@@ -86,5 +86,17 @@ namespace Api.Controllers
         {
             return await sender.Send(query, cancellationToken);
         }
+
+        /// <summary>
+        /// Установление аватара локации
+        /// </summary>
+        /// <param name="command">Модель запроса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        [HttpPut("{LocationId}/set-avatar/{PictureId}")]
+        public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> SetLocationAvatar([FromQuery] SetLocationAvatarCommand command, CancellationToken cancellationToken)
+        {
+            return await sender.Send(command, cancellationToken);
+        }
     }
 }
