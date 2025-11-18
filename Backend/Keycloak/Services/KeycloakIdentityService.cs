@@ -6,6 +6,7 @@ using Keycloak.Clients;
 using Keycloak.Models;
 using Keycloak.Models.KeycloakApiModels;
 using Microsoft.Extensions.Options;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Keycloak.Services
 {
@@ -100,6 +101,14 @@ namespace Keycloak.Services
         {
             Defend.Against.Null(userId, nameof(userId));
             await httpClient.DeleteAsync(new Uri($"admin/realms/{_realm}/users/{userId}", UriKind.Relative), cancellationToken);
+        }
+
+        public async Task<List<UserRepresentationModel>> GetUserByUsername(string username, CancellationToken cancellationToken = default)
+        {
+            Defend.Against.NullOrEmpty(username, nameof(username));
+            var queryParameter = new Dictionary<string, string?> { { "username", username } };
+
+            return await httpClient.GetAsync<List<UserRepresentationModel>>(new Uri($"admin/realms/{_realm}/users", UriKind.Relative), queryParameter, cancellationToken);
         }
     }
 }

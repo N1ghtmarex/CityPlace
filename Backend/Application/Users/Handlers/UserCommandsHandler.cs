@@ -16,10 +16,22 @@ namespace Application.Users.Handlers
     {
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
+            var externalUserResult = await identityService.GetUserByUsername(request.Body.Username, cancellationToken);
+            var externalUser = externalUserResult.Count == 0 ? null : externalUserResult[0];
+
             var userWithSameUsername = await dbContext.Users.SingleOrDefaultAsync(x => x.Username == request.Body.Username, cancellationToken);
-            if (userWithSameUsername != null)
+
+            if (externalUser != null && userWithSameUsername != null)
             {
                 throw new BusinessLogicException($"Пользователь с именем \"{userWithSameUsername.Username}\" уже существует!");
+            }
+            else if (externalUser == null && userWithSameUsername != null)
+            {
+                dbContext.Remove(userWithSameUsername);
+            }
+            else if (externalUser != null && userWithSameUsername == null)
+            {
+                await identityService.DeleteUserAsync(externalUser.Id, cancellationToken);
             }
 
             var userToCreate = new User
