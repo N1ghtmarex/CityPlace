@@ -34,17 +34,9 @@ namespace Application.Users.Handlers
                 await identityService.DeleteUserAsync(externalUser.Id, cancellationToken);
             }
 
-            var userToCreate = new User
-            {
-                Id = Ulid.NewUlid(),
-                Username = request.Body.Username,
-                Role = UserRole.Admin,
-                CreatedAt = DateTime.UtcNow
-            };
-
             var createKeycloakUserModel = new CreateKeyckloakUserModel
             {
-                UserName = userToCreate.Username,
+                UserName = request.Body.Username,
                 Email = request.Body.Email,
                 FirstName = request.Body.FirstName,
                 LastName = request.Body.LastName,
@@ -59,7 +51,16 @@ namespace Application.Users.Handlers
                 ]
             };
 
-            var keycloakUserId = await identityService.CreateUserAsync(createKeycloakUserModel, cancellationToken);
+            var keycloakUserId = Guid.Parse(await identityService.CreateUserAsync(createKeycloakUserModel, cancellationToken));
+
+            var userToCreate = new User
+            {
+                ExternalUserId = keycloakUserId,
+                Id = Ulid.NewUlid(),
+                Username = request.Body.Username,
+                Role = UserRole.Admin,
+                CreatedAt = DateTime.UtcNow
+            };
 
             var createdUser = await dbContext.AddAsync(userToCreate, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
