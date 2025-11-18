@@ -12,9 +12,9 @@ namespace Api.Controllers
     [Authorize]
     public class UserController(ISender sender) : ControllerBase
     {
-        [HttpPost("create")]
+        [HttpPost("registration")]
         [AllowAnonymous]
-        public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> CreateUser([FromQuery] CreateUserCommand command, CancellationToken cancellationToken)
+        public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> RegisterUser([FromQuery] CreateUserCommand command, CancellationToken cancellationToken)
         {
             return await sender.Send(command, cancellationToken);
         }
