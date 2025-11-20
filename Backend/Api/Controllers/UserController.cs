@@ -15,6 +15,12 @@ namespace Api.Controllers
     [Authorize]
     public class UserController(ISender sender) : ControllerBase
     {
+        /// <summary>
+        /// Регистрация пользователя
+        /// </summary>
+        /// <param name="command">Модель запроса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
         [HttpPost("registration")]
         [AllowAnonymous]
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> RegisterUser([FromQuery] CreateUserCommand command, CancellationToken cancellationToken)
