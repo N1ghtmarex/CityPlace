@@ -25,7 +25,7 @@ namespace Infrastructure.Services
                 await stream.FlushAsync(cancellationToken);
             }
 
-            return Path.Combine(filePath, $"{fileName}{Path.GetExtension(file.FileName)}");
+            return Path.Combine(Path.Combine("Uploads", additionalPath), $"{fileName}{Path.GetExtension(file.FileName)}");
         }
     }
 }
