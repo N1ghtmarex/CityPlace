@@ -10,6 +10,7 @@ using Infrastructure;
 using Keycloak;
 using Keycloak.Configurations;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,5 +54,12 @@ app.UseAuthorization();
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<ContextSetterMiddleware>();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())?.FullName ?? "", "Uploads")),
+    RequestPath = "/uploads"
+});
 
 app.Run();
