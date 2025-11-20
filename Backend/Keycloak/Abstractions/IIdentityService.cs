@@ -49,5 +49,13 @@ namespace Keycloak.Abstractions
         /// <param name="userId">Идентификатор пользователя</param>
         /// <param name="cancellationToken">Токен отмены</param>
         Task DeleteUserAsync(string userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Проверка существования пользователя
+        /// </summary>
+        /// <param name="username">Имя пользователя</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        Task<List<UserRepresentationModel>> GetUserByUsername(string username, CancellationToken cancellationToken = default);
     }
 }
