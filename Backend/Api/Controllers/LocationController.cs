@@ -33,6 +33,7 @@ namespace Api.Controllers
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
         [HttpGet("{LocationId}")]
+        [AllowAnonymous]
         public async Task<LocationViewModel> GetLocation([FromQuery] GetLocationQuery query, CancellationToken cancellationToken)
         {
             return await sender.Send(query, cancellationToken);
@@ -45,6 +46,7 @@ namespace Api.Controllers
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<PagedResult<LocationListViewModel>> GetLocationsList([FromQuery] GetLocationsListQuery query, CancellationToken cancellationToken)
         {
             return await sender.Send(query, cancellationToken);
