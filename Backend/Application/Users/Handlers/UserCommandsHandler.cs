@@ -62,15 +62,6 @@ namespace Application.Users.Handlers
                 CreatedAt = DateTime.UtcNow
             };
 
-            var userToCreate = new User
-            {
-                Id = Ulid.NewUlid(),
-                ExternalUserId = Guid.Parse(keycloakUserId),
-                Username = request.Body.Username,
-                Role = UserRole.User,
-                CreatedAt = DateTime.UtcNow
-            };
-
             var createdUser = await dbContext.AddAsync(userToCreate, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
 
