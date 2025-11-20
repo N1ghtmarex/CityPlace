@@ -9,6 +9,7 @@ using Domain;
 using Infrastructure;
 using Keycloak;
 using Keycloak.Configurations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
@@ -41,6 +42,8 @@ builder.Services.AddScoped<ICurrentHttpContextAccessor, CurrentHttpContextAccess
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
 app.SetConnectionStringEnvironment(app.Configuration.GetConnectionString("DbConnection"));
 
 app.MapControllers();
@@ -54,12 +57,5 @@ app.UseAuthorization();
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<ContextSetterMiddleware>();
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())?.FullName ?? "", "Uploads")),
-    RequestPath = "/uploads"
-});
 
 app.Run();
