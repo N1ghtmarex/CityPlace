@@ -25,8 +25,6 @@ const page = () => {
   
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-5xl font-bold mb-6">Откройте удивительные места рядом с вами</h2>
@@ -60,8 +58,6 @@ const page = () => {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

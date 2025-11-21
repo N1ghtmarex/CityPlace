@@ -1,6 +1,4 @@
 "use client"
-import Footer from "@/components/layout/Footer";
-import Header from "@/components/layout/Header";
 import { Location } from "@/types/location";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
@@ -61,7 +59,6 @@ export default function LocationPage({ params }: Props) {
   if (!location) {
     return (
         <div>
-            <Header />
             <div className="min-h-screen bg-gray-50 py-8">
                 <div className="container mx-auto px-4">
                     <div className="bg-white rounded-lg shadow-lg p-8 text-center">
@@ -73,14 +70,12 @@ export default function LocationPage({ params }: Props) {
                     </div>
                 </div>
             </div>
-            <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-        <Header />
         {/* Хлебные крошки */}
         <nav className="bg-white border-b border-gray-200">
             <div className="container mx-auto px-4 py-4">
