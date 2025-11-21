@@ -58,4 +58,6 @@ app.UseAuthorization();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<ContextSetterMiddleware>();
 
+app.UseCors(builder => builder.AllowAnyOrigin());
+
 app.Run();
