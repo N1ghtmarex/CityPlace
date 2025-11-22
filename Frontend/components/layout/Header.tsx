@@ -33,16 +33,16 @@ export default function Header() {
               Все локации
             </Link>
             <Link 
-              href="/categories" 
-              className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
-            >
-              Категории
-            </Link>
-            <Link 
               href="/about" 
               className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
             >
               О проекте
+            </Link>
+            <Link 
+              href="/register" 
+              className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+            >
+              Зарегистрироваться
             </Link>
           </nav>
 
