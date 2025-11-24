@@ -122,7 +122,7 @@ export default function NewLocationPage() {
 
         formData.images.forEach((file, index) => {
             const formFile = new FormData();
-            formFile.append('Body.File', formData.images[0]);
+            formFile.append('Body.File', file);
 
             axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/picture/locationId/${locationId}`, formFile, {
             headers: {
