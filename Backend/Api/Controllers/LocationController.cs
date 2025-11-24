@@ -100,5 +100,18 @@ namespace Api.Controllers
         {
             return await sender.Send(command, cancellationToken);
         }
+
+        /// <summary>
+        /// Получение списка типов локаций
+        /// </summary>
+        /// <param name="query">Модель запроса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        [HttpGet("types")]
+        [AllowAnonymous]
+        public async Task<List<LocationTypesViewModel>> GetLocationTypes([FromQuery] GetLocationTypesQuery query, CancellationToken cancellationToken)
+        {
+            return await sender.Send(query, cancellationToken);
+        }
     }
 }
