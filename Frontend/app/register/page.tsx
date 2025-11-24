@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -16,6 +18,14 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { data: session, status } = useSession()
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push("/");
+    }
+  }, [status])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -239,9 +249,9 @@ export default function RegisterPage() {
               <div className="text-center">
                 <p className="text-gray-600">
                   Уже есть аккаунт?{' '}
-                  <Link href="/login" className="text-blue-600 font-semibold hover:underline">
+                  <button onClick={() => signIn()} className="text-blue-600 font-semibold hover:underline">
                     Войти
-                  </Link>
+                  </button>
                 </p>
               </div>
             </div>

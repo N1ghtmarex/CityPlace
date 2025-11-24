@@ -1,10 +1,12 @@
 'use client';
 
+import { useSession, signOut, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: session, status } = useSession()
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -38,12 +40,33 @@ export default function Header() {
             >
               О проекте
             </Link>
-            <Link 
-              href="/register" 
-              className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
-            >
-              Зарегистрироваться
-            </Link>
+            
+            {
+              status == 'unauthenticated' && (
+                <>
+                  <Link 
+                    href="/register" 
+                    className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+                  >
+                    Зарегистрироваться
+                  </Link>
+                  <button className="text-gray-600 hover:text-blue-600 transition-colors font-medium" onClick={() => signIn()}>
+                    Войти
+                  </button>
+                </>
+              )
+            }
+            {
+              status == 'authenticated' && (
+                <>
+                <span className="text-gray-800 hover:text-blue-600 transition-colors font-medium">Добро пожаловать, { session.user?.name?.split(" ")[0] }</span>
+                <button className="text-gray-600 hover:text-blue-600 transition-colors font-medium" onClick={() => signOut()}>
+                  Выйти
+                </button>
+                </>
+                
+              )
+            }
           </nav>
 
           {/* Кнопка мобильного меню */}
