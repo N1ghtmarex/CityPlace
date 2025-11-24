@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data: session, status, update } = useSession()
+  const { data: session, status } = useSession()
   const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,9 +46,12 @@ export default function Header() {
             </Link>
             {
               role == 'Admin' && (
-                <span className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+                <Link 
+                  href="/location/new" 
+                  className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+                >
                   Добавить локацию
-                </span>
+                </Link>
               )
             }
             <Link 
