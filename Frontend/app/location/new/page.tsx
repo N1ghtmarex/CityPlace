@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   MapPin, 
@@ -29,11 +29,18 @@ interface LocationFormData {
   images: File[];
 }
 
+interface LocationType {
+  value: number;
+  name: string;
+  description: string;
+}
+
 export default function NewLocationPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const { data: session, status } = useSession()
+  const [locationTypes, setLocationTypes] = useState<LocationType[]>([])
   
   const [formData, setFormData] = useState<LocationFormData>({
     title: '',
@@ -48,14 +55,12 @@ export default function NewLocationPage() {
     images: []
   });
 
-  const locationTypes = [
-    'None',
-    'Food',
-    'Service',
-    'Entertainment',
-    'Monuments',
-    'Sport',
-  ];
+  useEffect(() => {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/locations/types`)
+    .then(response => {
+        setLocationTypes(response.data);
+    })
+  }, [locationTypes]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -208,7 +213,9 @@ export default function NewLocationPage() {
                   >
                     <option value="">Выберите тип</option>
                     {locationTypes.map(type => (
-                      <option key={type} value={type}>{type}</option>
+                    <option key={type.value} value={type.value}>
+                        {type.description}
+                    </option>
                     ))}
                   </select>
                 </div>
