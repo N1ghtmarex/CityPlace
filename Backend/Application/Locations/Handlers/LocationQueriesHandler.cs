@@ -40,7 +40,7 @@ namespace Application.Locations.Handlers
                         PlanningStructure = x.Address!.PlanningStructure,
                         Settlement = x.Address!.Settlement
                     },
-                    Type = x.Type,
+                    Type = locationService.GetDescription(x.Type),
                     Pictures = x.LocationPictures!.Select(p => new PictureViewModel
                     {
                         Id = p.PictureId,
@@ -82,7 +82,7 @@ namespace Application.Locations.Handlers
                         PlanningStructure = x.Address!.PlanningStructure,
                         Settlement = x.Address!.Settlement
                     },
-                    Type = x.Type,
+                    Type = locationService.GetDescription(x.Type),
                     Pictures = x.LocationPictures!.Select(p => new PictureViewModel
                     {
                         Id = p.PictureId,
@@ -116,7 +116,7 @@ namespace Application.Locations.Handlers
                     Id = x.LocationId,
                     Name = x.Location!.Name,
                     Description = x.Location.Description,
-                    Type = x.Location.Type,
+                    Type = locationService.GetDescription(x.Location.Type),
                     Address = new AddressViewModel
                     {
                         Id = x.Location.Address!.Id,
