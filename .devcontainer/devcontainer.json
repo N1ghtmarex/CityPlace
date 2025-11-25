@@ -1,0 +1,10 @@
+{
+    "name": "CityPlace",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu24.04",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "24.11.1",
+            "nvmVersion": "0.40.3"
+        }
+    }
+}
