@@ -1,7 +1,12 @@
 import { Location } from '@/types/location';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import localFont from 'next/font/local';
 import { useEffect, useState } from 'react';
+
+const font = localFont({
+  src: '../public/fonts/FranksRus-Regular_0.otf',
+})
 
 interface LocationCardProps {
   location: Location;
@@ -28,45 +33,38 @@ export default function LocationCard({ location, isFavorite }: LocationCardProps
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
-      <div className="relative flex-grow-0">
-        <img
-          src={`${process.env.NEXT_PUBLIC_API_URL}/${location.pictures.filter(x => x.isAvatar == true)[0]?.path}`}
-          className="w-full h-48 object-cover"
+    <div key={location.id} className="max-w-md relative drop-shadow-lg mb-55">
+      <a href={`/location/${location.id}`}>
+        {/* Аватар */}
+        <img className="w-full h-full object-cover rounded-4xl hover:mix-blend-multiply hover:opacity-90"
+          src={`${process.env.NEXT_PUBLIC_API_URL}/${location.pictures.filter(x => x.isAvatar)[0]?.path}`}
         />
-        <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-          {location.type}
+        {/* Название локации */}
+        <div className={`${font.className} text-black mt-4 text-center text-3xl font-black tracking-wide h-[2.2em] cursor-pointer`}>
+          {location.name}
         </div>
-        <div className="absolute top-4 left-4 bg-white bg-opacity-90 px-2 py-1 rounded flex items-center">
-          <span className="text-yellow-500 mr-1">★</span>
-          <span className="text-gray-400 font-semibold">5.00</span>
+        <div className="text-gray-400 text-center mt-6">
+          <span>{location.description}</span>
         </div>
-      </div>
-      
-      <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-xl font-bold text-gray-800 mb-2">{location.name}</h3>
-        <p className="text-gray-600 mb-4 line-clamp-2 flex-grow">{location.description}</p>
-        
-        <div className="mb-4">
-          <div className="flex items-center text-gray-500 mb-2">
-            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+        {/* Избранное */}
+        <div className="absolute top-0 right-0 mr-2 mt-2 w-9 h-9 rounded-full bg-white drop-shadow-lg cursor-pointer" onClick={() => favorite(location.id)}>
+          <div className="w-full h-full flex items-center justify-center">
+            <svg viewBox="0 0 24 24" className="w-7 h-7"
+              fill={`${isFavoriteParameter ? 'red' : 'none'}`} xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 
+              4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 
+              20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 
+              21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" 
+              stroke={`${isFavoriteParameter ? 'red' : '#000000'}`}
+              strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="text-sm">{location.address.planningStructure}</span>
           </div>
         </div>
-
-        <div className="flex justify-between items-center mt-auto">
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
-            <a href={`/location/${location.id}`}>Подробнее</a>
-          </button>
-          <button className={`${isFavoriteParameter ? "text-red-500 hover:text-gray-400"  : "text-gray-400 hover:text-red-500"} transition-colors`} onClick={() => favorite(location.id)}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-          </button>
+        {/* Тип локации */}
+        <div className="absolute top-0 ml-2 mt-2 h-9 text-black rounded-4xl bg-white flex items-center justify-center p-3 drop-shadow-lg">
+          <span>{location.type}</span>
         </div>
-      </div>
-    </div>
+      </a>
+    </div> 
   );
 }

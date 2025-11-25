@@ -60,7 +60,7 @@ export default function HomePage() {
                 placeholder="Поиск мест, категорий..." 
                 className="flex-1 px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none"
               />
-              <button onClick={getLocations} className="bg-yellow-500 text-gray-900 px-6 py-3 rounded-r-lg font-semibold hover:bg-yellow-400 transition-colors">
+              <button onClick={getLocations} className={`bg-yellow-500 text-gray-900 px-6 py-3 rounded-r-lg font-semibold hover:bg-yellow-400 transition-colors`}>
                 Найти
               </button>
             </div>
@@ -71,10 +71,12 @@ export default function HomePage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Популярные локации</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {locations.map((location) => (
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center gap-8">
+            { locations.map((location) => (
               <LocationCard key={location.id} location={location} isFavorite={favoriteLocations.some(x => x.id == location.id)}/>
-            ))}
+            ))
+            }
           </div>
         </div>
       </section>
