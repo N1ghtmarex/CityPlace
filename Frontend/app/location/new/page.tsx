@@ -121,7 +121,7 @@ export default function NewLocationPage() {
       console.log('Form data:', formData);
       
       // Имитация загрузки
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/locations?Body.Name=${formData.title}&Body.LocationType=${formData.type}&Body.Address.Region=${formData.region}&Body.Address.District=${formData.district}&Body.Address.Settlement=${formData.city}&Body.Address.PlanningStructure=${formData.street}&Body.Address.House=${formData.building}&Body.Address.Appartment=${formData.block}`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/locations?Body.Name=${formData.title}${formData.description != "" ? `&Body.Description=${formData.description}` : ""}&Body.LocationType=${formData.type}&Body.Address.Region=${formData.region}&Body.Address.District=${formData.district}&Body.Address.Settlement=${formData.city}&Body.Address.PlanningStructure=${formData.street}&Body.Address.House=${formData.building}&Body.Address.Appartment=${formData.block}`, {
       }, {
         headers: {
             Authorization: `Bearer ${session!.accessToken}`
