@@ -97,7 +97,7 @@ export default function LocationPage({ params }: Props) {
                     <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
                         <div className="grid grid-cols-2 gap-2 p-2">
                             <div className="col-span-2">
-                                <img src={`${process.env.NEXT_PUBLIC_API_URL}/${location.pictures.filter(x => x.isAvatar == true)[0].path}`} 
+                                <img src={`${process.env.NEXT_PUBLIC_API_URL}/${location.pictures.filter(x => x.isAvatar == true)[0]?.path}`} 
                                     className="w-full h-80 object-cover rounded-lg"/>
                             </div>
                             {location.pictures.slice(1, 5).map((picture, index) => (
