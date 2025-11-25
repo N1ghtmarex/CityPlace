@@ -20,6 +20,9 @@ export default function Header() {
       .then(response => {
         setRole(response.data.role);
       })
+      .catch(() => {
+        signOut();
+      })
     }
   }, [status, session, role]);
   
