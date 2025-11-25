@@ -79,7 +79,7 @@ export default function Header() {
                   >
                     Зарегистрироваться
                   </Link>
-                  <button className="text-gray-600 hover:text-blue-600 transition-colors font-medium" onClick={() => signIn()}>
+                  <button className="text-gray-600 hover:text-blue-600 transition-colors font-medium" onClick={() => signIn("keycloak")}>
                     Войти
                   </button>
                 </>

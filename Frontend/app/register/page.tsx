@@ -249,7 +249,7 @@ export default function RegisterPage() {
               <div className="text-center">
                 <p className="text-gray-600">
                   Уже есть аккаунт?{' '}
-                  <button onClick={() => signIn()} className="text-blue-600 font-semibold hover:underline">
+                  <button onClick={() => signIn("keycloak")} className="text-blue-600 font-semibold hover:underline">
                     Войти
                   </button>
                 </p>

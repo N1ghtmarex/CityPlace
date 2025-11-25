@@ -57,7 +57,7 @@ export default function NewLocationPage() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      signIn()
+      signIn("keycloak");
     }
   }, [status])
 
