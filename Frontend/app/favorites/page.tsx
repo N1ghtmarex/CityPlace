@@ -4,7 +4,7 @@ import Link from 'next/link';
 import LocationCard from '@/components/LocationCard';
 import { Location } from '@/types/location';
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 
 export default function FavoritesPage() {
   const [favoriteLocations, setFavoriteLocations] = useState<Location[]>([]);
@@ -59,7 +59,9 @@ export default function FavoritesPage() {
           <p className="text-gray-600">
             {favoriteLocations.length > 0 
               ? `У вас ${favoriteLocations.length} избранных локаций`
-              : status == 'authenticated' ? 'У вас пока нет избранных локаций' : 'Зарегистрируйтесь или войдите в аккаунт чтобы не потерять понравившиеся места'
+              : status == 'authenticated' 
+                ? 'У вас пока нет избранных локаций' 
+                : <><Link href='/register' className='text-blue-600'>Зарегистрируйтесь </Link>или <a className='text-blue-600 cursor-pointer' onClick={() => signIn("keycloak")}>войдите </a>в аккаунт чтобы не потерять понравившиеся места</>
             }
           </p>
         </div>
