@@ -14,7 +14,7 @@ import {
   X
 } from 'lucide-react';
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 
 interface LocationFormData {
   title: string;
@@ -54,6 +54,12 @@ export default function NewLocationPage() {
     block: '0',
     images: []
   });
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      signIn()
+    }
+  }, [status])
 
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/locations/types`)
