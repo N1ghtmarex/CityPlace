@@ -6,8 +6,8 @@ interface LocationCardProps {
 
 export default function LocationCard({ location }: LocationCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-      <div className="relative">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+      <div className="relative flex-grow-0">
         <img
           src={`${process.env.NEXT_PUBLIC_API_URL}/${location.pictures.filter(x => x.isAvatar == true)[0]?.path}`}
           className="w-full h-48 object-cover"
@@ -21,9 +21,9 @@ export default function LocationCard({ location }: LocationCardProps) {
         </div>
       </div>
       
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-grow">
         <h3 className="text-xl font-bold text-gray-800 mb-2">{location.name}</h3>
-        <p className="text-gray-600 mb-4 line-clamp-2">{location.description}</p>
+        <p className="text-gray-600 mb-4 line-clamp-2 flex-grow">{location.description}</p>
         
         <div className="mb-4">
           <div className="flex items-center text-gray-500 mb-2">
@@ -34,7 +34,7 @@ export default function LocationCard({ location }: LocationCardProps) {
           </div>
         </div>
 
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mt-auto">
           <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
             <a href={`/location/${location.id}`}>Подробнее</a>
           </button>
