@@ -58,10 +58,10 @@ export default function Header() {
               )
             }
             <Link 
-              href="/locations" 
+              href="/favorites" 
               className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
             >
-              Все локации
+              Избранное
             </Link>
             <Link 
               href="/about" 
@@ -127,10 +127,10 @@ export default function Header() {
                 className="text-gray-600 hover:text-blue-600 transition-colors font-medium py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Все локации
+                Избранное
               </Link>
               <Link 
-                href="/categories" 
+                href="/favorites" 
                 className="text-gray-600 hover:text-blue-600 transition-colors font-medium py-2"
                 onClick={() => setIsMenuOpen(false)}
               >

@@ -1,10 +1,32 @@
 import { Location } from '@/types/location';
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 interface LocationCardProps {
   location: Location;
+  isFavorite: boolean
 }
 
-export default function LocationCard({ location }: LocationCardProps) {
+export default function LocationCard({ location, isFavorite }: LocationCardProps) {
+  const { data: session, status } = useSession()
+  const [isFavoriteParameter, setIsFavoriteParameter] = useState<boolean>(isFavorite);
+  useEffect(() => {
+    setIsFavoriteParameter(isFavorite);
+  }, [isFavorite]);
+  
+  const favorite = async (id: string) => {
+    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/locations/favorite/${id}`, null, {
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`
+      }
+    })
+    .then(response => {
+      setIsFavoriteParameter(!isFavoriteParameter);
+    })
+
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
       <div className="relative flex-grow-0">
@@ -38,7 +60,7 @@ export default function LocationCard({ location }: LocationCardProps) {
           <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
             <a href={`/location/${location.id}`}>Подробнее</a>
           </button>
-          <button className="text-gray-400 hover:text-red-500 transition-colors">
+          <button className={`${isFavoriteParameter ? "text-red-500 hover:text-gray-400"  : "text-gray-400 hover:text-red-500"} transition-colors`} onClick={() => favorite(location.id)}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>

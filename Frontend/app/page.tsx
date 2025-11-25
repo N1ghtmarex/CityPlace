@@ -1,27 +1,47 @@
 "use client"
-import Footer from "@/components/layout/Footer";
-import Header from "@/components/layout/Header";
 import LocationCard from "@/components/LocationCard";
 import { Location } from "@/types/location";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-const page = () => {
+export default function HomePage() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
   const [locations, setLocations] = useState<Location[]>([]);
+  const [favoriteLocations, setFavoriteLocations] = useState<Location[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: session, status } = useSession()
 
-  const getLocations = () => {
-    axios.get(`${apiUrl}/api/locations${searchQuery != '' ? `?searchQuery=${searchQuery}` : ''}`)
+  const getLocations = async () => {
+    await axios.get(`${apiUrl}/api/locations${searchQuery != '' ? `?searchQuery=${searchQuery}` : ''}`)
       .then(response => {
         setLocations(response.data.items);
+        console.log(response.data.items);
       }
     );
+  }
+
+  const getFavoriteLocations = async () => {
+    await axios.get(`${apiUrl}/api/locations/favorite`, {
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`
+      }
+    })
+    .then(response => {
+      setFavoriteLocations(response.data.items);
+      console.log(response.data.items);
+    })
   }
 
   useEffect(() => {
     getLocations();
   }, []);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      getFavoriteLocations();
+    }
+  }, [status])
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,7 +73,7 @@ const page = () => {
           <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Популярные локации</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {locations.map((location) => (
-              <LocationCard key={location.id} location={location} />
+              <LocationCard key={location.id} location={location} isFavorite={favoriteLocations.some(x => x.id == location.id)}/>
             ))}
           </div>
         </div>
@@ -61,5 +81,3 @@ const page = () => {
     </div>
   );
 }
-
-export default page;

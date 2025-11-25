@@ -126,7 +126,16 @@ namespace Application.Locations.Handlers
                         PlanningStructure = x.Location.Address.PlanningStructure,
                         Region = x.Location.Address.Region,
                         Settlement = x.Location.Address.Settlement
-                    }
+                    },
+                    Pictures = x.Location.LocationPictures!.Select(p => new PictureViewModel
+                    {
+                        Id = p.PictureId,
+                        IsAvatar = p.IsAvatar,
+                        Path = p.Picture!.Path,
+                        CreatedAt = p.CreatedAt,
+                        UserId = p.Picture.UserId
+                    })
+                    .ToList()
                 })
                 .ToListAsync(cancellationToken);
 
