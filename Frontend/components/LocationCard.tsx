@@ -14,7 +14,7 @@ interface LocationCardProps {
 }
 
 export default function LocationCard({ location, isFavorite }: LocationCardProps) {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const [isFavoriteParameter, setIsFavoriteParameter] = useState<boolean>(isFavorite);
   useEffect(() => {
     setIsFavoriteParameter(isFavorite);
@@ -29,33 +29,28 @@ export default function LocationCard({ location, isFavorite }: LocationCardProps
     .then(response => {
       setIsFavoriteParameter(!isFavoriteParameter);
     })
-
   }
 
   return (
-    <div key={location.id} className="max-w-md relative drop-shadow-lg mb-55">
+    <div key={location.id} className="location-card-container">
       <a href={`/location/${location.id}`}>
-        {/* Аватар */}
-        <img className="w-full h-full object-cover rounded-4xl hover:mix-blend-multiply hover:opacity-90"
+        <img className="location-avatar"
           src={`${process.env.NEXT_PUBLIC_API_URL}/${location.pictures.filter(x => x.isAvatar)[0]?.path}`}
         />
-        {/* Название локации */}
-        <div className={`${font.className} text-black mt-4 text-center text-3xl font-black tracking-wide h-[2.2em] cursor-pointer`}>
+        <div className={`${font.className} location-name`}>
           {location.name}
         </div>
-        <div className="text-gray-400 text-center mt-6">
+        <div className="location-description">
           <span>{location.description}</span>
         </div>
       </a>
-      {/* Избранное */}
-      <div className="absolute top-0 right-0 mr-2 mt-2 w-9 h-9 rounded-full bg-white drop-shadow-lg cursor-pointer" onClick={() => favorite(location.id)}>
-        <div className="w-full h-full flex items-center justify-center">
-          <img className='w-7 h-7' src={`${isFavoriteParameter ? '/icons/favoriteFilled.svg' : '/icons/favorite.svg'}`}>
+      <div className="favorite-wrapper" onClick={() => favorite(location.id)}>
+        <div className="favorite-container">
+          <img className='favorite-icon' src={`${isFavoriteParameter ? '/icons/favoriteFilled.svg' : '/icons/favorite.svg'}`}>
           </img>
         </div>
       </div>
-      {/* Тип локации */}
-      <div className="absolute top-0 ml-2 mt-2 h-9 text-black rounded-4xl bg-white flex items-center justify-center p-3 drop-shadow-lg">
+      <div className="location-type">
         <span>{location.type}</span>
       </div>
     </div> 

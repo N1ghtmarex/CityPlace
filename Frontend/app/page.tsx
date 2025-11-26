@@ -4,6 +4,7 @@ import { Location } from "@/types/location";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import '../src/styles/index.scss'
 
 export default function HomePage() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
