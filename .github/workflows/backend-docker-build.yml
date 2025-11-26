@@ -28,7 +28,7 @@ jobs:
         with:
           file: ./Api/Dockerfile
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             type=sha,format=long,prefix=sha-
           labels: ${{ steps.meta.outputs.labels }}
           push: true
