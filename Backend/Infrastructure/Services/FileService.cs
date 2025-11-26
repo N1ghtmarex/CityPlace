@@ -10,7 +10,7 @@ namespace Infrastructure.Services
 
         public async Task<string> SaveFileAsync(string additionalPath, string fileName, IFormFile file, CancellationToken cancellationToken)
         {
-            var filePath = Path.Combine("Uploads", additionalPath);
+            var filePath = Path.Combine("Api", Path.Combine("wwwroot", Path.Combine("Uploads", additionalPath)));
 
             var fullPath = Path.Combine(directory, filePath);
 
@@ -25,7 +25,7 @@ namespace Infrastructure.Services
                 await stream.FlushAsync(cancellationToken);
             }
 
-            return Path.Combine(filePath, $"{fileName}{Path.GetExtension(file.FileName)}");
+            return Path.Combine(Path.Combine("Uploads", additionalPath), $"{fileName}{Path.GetExtension(file.FileName)}");
         }
     }
 }

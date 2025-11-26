@@ -10,6 +10,7 @@ namespace Infrastructure
         {
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IFileService, FileService>();
+            services.AddTransient<ILocationService, LocationService>();
 
             return services;
         }

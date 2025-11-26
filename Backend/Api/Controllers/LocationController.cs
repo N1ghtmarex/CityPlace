@@ -33,6 +33,7 @@ namespace Api.Controllers
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
         [HttpGet("{LocationId}")]
+        [AllowAnonymous]
         public async Task<LocationViewModel> GetLocation([FromQuery] GetLocationQuery query, CancellationToken cancellationToken)
         {
             return await sender.Send(query, cancellationToken);
@@ -45,6 +46,7 @@ namespace Api.Controllers
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<PagedResult<LocationListViewModel>> GetLocationsList([FromQuery] GetLocationsListQuery query, CancellationToken cancellationToken)
         {
             return await sender.Send(query, cancellationToken);
@@ -97,6 +99,19 @@ namespace Api.Controllers
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> SetLocationAvatar([FromQuery] SetLocationAvatarCommand command, CancellationToken cancellationToken)
         {
             return await sender.Send(command, cancellationToken);
+        }
+
+        /// <summary>
+        /// Получение списка типов локаций
+        /// </summary>
+        /// <param name="query">Модель запроса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        [HttpGet("types")]
+        [AllowAnonymous]
+        public async Task<List<LocationTypesViewModel>> GetLocationTypes([FromQuery] GetLocationTypesQuery query, CancellationToken cancellationToken)
+        {
+            return await sender.Send(query, cancellationToken);
         }
     }
 }

@@ -7,14 +7,19 @@ using Core.EntityFramework.Features.SearchPagination;
 using Core.EntityFramework.Features.SearchPagination.Models;
 using Core.Exceptions;
 using Domain;
+using Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 
 namespace Application.Locations.Handlers
 {
-    internal class LocationQueriesHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext, IUserService userService) :
+    internal class LocationQueriesHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext, IUserService userService,
+            ILocationService locationService) :
         IRequestHandler<GetLocationQuery, LocationViewModel>, IRequestHandler<GetLocationsListQuery, PagedResult<LocationListViewModel>>,
-        IRequestHandler<GetFavoriteLocationListQuery, PagedResult<LocationListViewModel>>
+        IRequestHandler<GetFavoriteLocationListQuery, PagedResult<LocationListViewModel>>, 
+        IRequestHandler<GetLocationTypesQuery, List<LocationTypesViewModel>>
     {
         public async Task<LocationViewModel> Handle(GetLocationQuery request, CancellationToken cancellationToken)
         {
@@ -35,7 +40,7 @@ namespace Application.Locations.Handlers
                         PlanningStructure = x.Address!.PlanningStructure,
                         Settlement = x.Address!.Settlement
                     },
-                    Type = x.Type,
+                    Type = locationService.GetDescription(x.Type),
                     Pictures = x.LocationPictures!.Select(p => new PictureViewModel
                     {
                         Id = p.PictureId,
@@ -77,7 +82,7 @@ namespace Application.Locations.Handlers
                         PlanningStructure = x.Address!.PlanningStructure,
                         Settlement = x.Address!.Settlement
                     },
-                    Type = x.Type,
+                    Type = locationService.GetDescription(x.Type),
                     Pictures = x.LocationPictures!.Select(p => new PictureViewModel
                     {
                         Id = p.PictureId,
@@ -111,7 +116,7 @@ namespace Application.Locations.Handlers
                     Id = x.LocationId,
                     Name = x.Location!.Name,
                     Description = x.Location.Description,
-                    Type = x.Location.Type,
+                    Type = locationService.GetDescription(x.Location.Type),
                     Address = new AddressViewModel
                     {
                         Id = x.Location.Address!.Id,
@@ -121,11 +126,36 @@ namespace Application.Locations.Handlers
                         PlanningStructure = x.Location.Address.PlanningStructure,
                         Region = x.Location.Address.Region,
                         Settlement = x.Location.Address.Settlement
-                    }
+                    },
+                    Pictures = x.Location.LocationPictures!.Select(p => new PictureViewModel
+                    {
+                        Id = p.PictureId,
+                        IsAvatar = p.IsAvatar,
+                        Path = p.Picture!.Path,
+                        CreatedAt = p.CreatedAt,
+                        UserId = p.Picture.UserId
+                    })
+                    .ToList()
                 })
                 .ToListAsync(cancellationToken);
 
             return result.AsPagedResult(request, await userFavoriteQuery.CountAsync(cancellationToken));
+        }
+
+        public Task<List<LocationTypesViewModel>> Handle(GetLocationTypesQuery request, CancellationToken cancellationToken)
+        {
+            var result = Enum.GetValues(typeof(LocationType))
+                .Cast<LocationType>()
+                .Select(x => new LocationTypesViewModel
+                {
+                    Value = (int)x,
+                    Name = x.ToString(),
+                    Description = locationService.GetDescription(x)
+                })
+                .OrderBy(x => x.Description)
+                .ToList();
+
+            return Task.FromResult(result);
         }
     }
 }

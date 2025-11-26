@@ -38,4 +38,8 @@
 	<ProjectReference Include="..\Keycloak\Keycloak.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

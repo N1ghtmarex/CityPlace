@@ -1,16 +1,19 @@
-﻿using Application.Users.Dtos;
+﻿using Abstractions;
+using Application.Users.Dtos;
 using Application.Users.Queries;
 using Core.EntityFramework.Features.SearchPagination;
 using Core.EntityFramework.Features.SearchPagination.Models;
 using Core.Exceptions;
 using Domain;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Users.Handlers
 {
-    internal class UserQueriesHandler(ApplicationDbContext dbContext) :
-        IRequestHandler<GetUserQuery, UserViewModel>, IRequestHandler<GetUsersListQuery, PagedResult<UserListViewModel>>
+    internal class UserQueriesHandler(ApplicationDbContext dbContext, ICurrentHttpContextAccessor httpContext, IUserService userService) :
+        IRequestHandler<GetUserQuery, UserViewModel>, IRequestHandler<GetUsersListQuery, PagedResult<UserListViewModel>>,
+        IRequestHandler<GetCurrentUserQuery, UserViewModel>
     {
         public async Task<UserViewModel> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
@@ -46,6 +49,19 @@ namespace Application.Users.Handlers
                 .ToListAsync(cancellationToken);
 
             return result.AsPagedResult(request, await userQuery.CountAsync(cancellationToken));
+        }
+
+        public async Task<UserViewModel> Handle(GetCurrentUserQuery request, CancellationToken cancellationToken)
+        {
+            var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
+
+            return new UserViewModel
+            {
+                CreatedAt = user.CreatedAt,
+                Id = user.Id,
+                Role = user.Role,
+                Username = user.Username
+            };
         }
     }
 }

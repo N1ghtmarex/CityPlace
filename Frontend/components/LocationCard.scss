@@ -1,0 +1,78 @@
+.location-card-container {
+    max-width: 28rem;
+    position: relative;
+    margin-bottom: 13.75rem;
+}
+
+.location-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2rem;
+    filter: drop-shadow(0 4px 4px rgb(0 0 0 / 0.15));
+}
+
+.location-avatar:hover {
+    mix-blend-mode: multiply;
+    opacity: 90%;
+}
+
+.location-name {
+    color: black;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 1.875rem;
+    line-height: calc(2.25 / 1.875);
+    letter-spacing: 0.025em;
+    height: 2.2em;
+    cursor: pointer;
+}
+
+.location-description {
+    color: #a0aec0;
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.favorite-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: calc(infinity * 1px);
+    background-color: white;
+    filter: drop-shadow(0 4px 4px rgb(0 0 0 / 0.15));
+    cursor: pointer;
+}
+
+.favorite-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.favorite-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.location-type {
+    position: absolute;
+    top: 0;
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+    height: 2.25rem;
+    color: black;
+    border-radius: 2rem;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+    filter: drop-shadow(0 4px 4px rgb(0 0 0 / 0.15));
+}
