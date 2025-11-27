@@ -13,6 +13,7 @@ public static partial class UserMapper
     public static partial CreateKeyckloakUserModel MapToKeycloakUser(CreateUserModel source, List<Credentials> credentials);
 
     [MapValue(nameof(User.Id), Use = nameof(@GeneralMapper.GenerateId))]
+    [MapValue(nameof(User.CreatedAt), Use = nameof(@GeneralMapper.SetCreatedAt))]
     public static partial User MapToEntity(CreateUserModel source, Guid externalUserId, UserRole role);
     public static partial IQueryable<UserViewModel> ProjectToViewModel(this IQueryable<User> q);
     public static partial IQueryable<UserListViewModel> ProjectToListViewModel(this IQueryable<User> q);
