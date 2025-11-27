@@ -1,5 +1,6 @@
 ﻿using Application.Addresses.Dtos;
 using Application.Addresses.Queries;
+using Application.Mappers;
 using Core.EntityFramework.Features.SearchPagination;
 using Core.EntityFramework.Features.SearchPagination.Models;
 using Domain;
@@ -25,16 +26,7 @@ namespace Application.Addresses.Handlers
 
             var result = await addressQuery
                 .ApplyPagination(request)
-                .Select(x => new AddressListViewModel
-                {
-                    Id = x.Id,
-                    Region = x.Region,
-                    Settlement = x.Settlement,
-                    District = x.District,
-                    PlanningStructure = x.PlanningStructure,
-                    House = x.House,
-                    Appartment = x.Appartment
-                })
+                .ProjectToListViewModel()
                 .ToListAsync(cancellationToken);
 
             return result.AsPagedResult(request, await addressQuery.CountAsync(cancellationToken));
