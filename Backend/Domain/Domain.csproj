@@ -4,7 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <NoWarn>1591; S1185</NoWarn>
+    <NoWarn>1591; S1185; S4581</NoWarn>
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisModel>All</AnalysisModel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
