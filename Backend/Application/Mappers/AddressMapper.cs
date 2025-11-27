@@ -12,6 +12,7 @@ public static partial class AddressMapper
     public static partial IQueryable<AddressListViewModel> ProjectToListViewModel(this IQueryable<Address> q);
     public static partial AddressViewModel MapToViewModel(Address q);
 
+    [MapValue(nameof(Address.Id), Use = nameof(@GeneralMapper.GenerateId))]
     [MapValue(nameof(Address.RegionFiasId), Use = nameof(@GeneralMapper.GenerateStringId))]
     [MapValue(nameof(Address.DistrictFiasId), Use = nameof(@GeneralMapper.GenerateStringId))]
     [MapValue(nameof(Address.SettlementFiasId), Use = nameof(@GeneralMapper.GenerateStringId))]
