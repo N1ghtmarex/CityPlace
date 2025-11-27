@@ -7,7 +7,7 @@ namespace Application.Pictures.Commands
 {
     public class UploadLocationPictureCommand : IRequest<CreatedOrUpdatedEntityViewModel<Ulid>>
     {
-        [FromRoute]
+        [FromQuery]
         public required Ulid LocationId { get; init; }
 
         [FromForm]
