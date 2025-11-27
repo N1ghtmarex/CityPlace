@@ -4,11 +4,20 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Exclude the output of source generators from the compilation, show it in the IDE -->
+    <Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs"/>
+    <None Include="$(CompilerGeneratedFilesOutputPath)/**/*.cs"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="13.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
+    <PackageReference Include="Riok.Mapperly" Version="4.3.0" />
     <PackageReference Include="Ulid" Version="1.4.1" />
   </ItemGroup>
 
