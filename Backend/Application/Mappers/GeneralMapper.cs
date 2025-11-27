@@ -11,6 +11,12 @@ public static partial class GeneralMapper
         return Ulid.NewUlid();
     }
 
+    [NamedMapping("GenerateStringId")]
+    public static string GenerateStringId()
+    {
+        return Ulid.NewUlid().ToString();
+    }
+
     [NamedMapping("SetCreatedAt")]
     public static DateTimeOffset SetCreatedAt()
     {
