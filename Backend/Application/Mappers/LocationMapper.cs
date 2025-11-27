@@ -7,18 +7,25 @@ using Riok.Mapperly.Abstractions;
 namespace Application.Mappers;
 
 [Mapper]
+[UseStaticMapper(typeof(AddressMapper))]
 public static partial class LocationMapper
 {
-    public static partial IQueryable<LocationViewModel> ProjectToViewModels(this IQueryable<Location> q, AddressViewModel address);
-    public static partial IQueryable<LocationListViewModel> ProjectToListViewModels(this IQueryable<Location> q, AddressViewModel address);
+    public static partial IQueryable<LocationViewModel> ProjectToViewModel(this IQueryable<Location> q);
+    public static partial IQueryable<LocationListViewModel> ProjectToListViewModels(this IQueryable<Location> q);
 
     [MapValue(nameof(Location.Id), Use = nameof(GenerateId))]
     [MapValue(nameof(Location.CreatedAt), Use = nameof(SetCreatedAt))]
     public static partial Location MapToEntity(CreateLocationModel source, Address address, LocationType type);
 
     [NamedMapping("GenerateId")]
-    static Ulid GenerateId() => Ulid.NewUlid();
+    private static Ulid GenerateId()
+    {
+        return Ulid.NewUlid();
+    }
 
     [NamedMapping("SetCreatedAt")]
-    static DateTimeOffset SetCreatedAt() => DateTime.UtcNow;
+    private static DateTimeOffset SetCreatedAt()
+    {
+        return DateTime.UtcNow;
+    }
 }

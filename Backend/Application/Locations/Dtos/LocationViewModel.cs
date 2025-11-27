@@ -32,7 +32,7 @@ namespace Application.Locations.Dtos
         /// <summary>
         /// Модель адреса
         /// </summary>
-        public required AddressViewModel Address { get; init; }
+        public AddressViewModel? Address { get; init; }
         public List<PictureViewModel>? Pictures { get; init; }
     }
 }
