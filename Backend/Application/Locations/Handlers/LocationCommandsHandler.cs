@@ -46,15 +46,7 @@ namespace Application.Locations.Handlers
                 throw new ObjectExistsException("Локация с таким названием или адресом уже существует!");
             }
 
-            var locationToCreate = new Location
-            {
-                Id = Ulid.NewUlid(),
-                Name = request.Body.Name,
-                Description = request.Body.Description,
-                Type = request.Body.LocationType,
-                AddressId = address.Id,
-                CreatedAt = DateTime.UtcNow,
-            };
+            var locationToCreate = LocationMapper.MapToEntity(request.Body, address, request.Body.LocationType);
 
             var createdLocation = await dbContext.AddAsync(locationToCreate, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -82,22 +74,7 @@ namespace Application.Locations.Handlers
 
             if (address == null)
             {
-                var addressToCreate = new Address
-                {
-                    Id = Ulid.NewUlid(),
-                    Region = request.Body.Address.Region,
-                    RegionFiasId = Ulid.NewUlid().ToString(),
-                    District = request.Body.Address.District,
-                    DistrictFiasId = Ulid.NewUlid().ToString(),
-                    Settlement = request.Body.Address.Settlement,
-                    SettlementFiasId = Ulid.NewUlid().ToString(),
-                    PlanningStructure = request.Body.Address.PlanningStructure,
-                    PlanningStructureFiasId = Ulid.NewUlid().ToString(),
-                    House = request.Body.Address.House,
-                    HouseFiasId = Ulid.NewUlid().ToString(),
-                    Appartment = request.Body.Address.Appartment,
-                    AppartmentFiasId = Ulid.NewUlid().ToString()
-                };
+                var addressToCreate = AddressMapper.MapToEntity(request.Body.Address);
 
                 var createdAddress = await dbContext.AddAsync(addressToCreate, cancellationToken);
                 address = createdAddress.Entity;

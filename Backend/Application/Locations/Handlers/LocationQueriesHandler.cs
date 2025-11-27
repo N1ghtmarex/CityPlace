@@ -2,6 +2,7 @@
 using Application.Addresses.Dtos;
 using Application.Locations.Dtos;
 using Application.Locations.Queries;
+using Application.Mappers;
 using Application.Pictures.Dtos;
 using Core.EntityFramework.Features.SearchPagination;
 using Core.EntityFramework.Features.SearchPagination.Models;
@@ -21,32 +22,7 @@ namespace Application.Locations.Handlers
             var location = await dbContext.Locations
                 .AsNoTracking()
                 .Include(x => x.Address)
-                .Select(x => new LocationViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                    Address = new AddressViewModel
-                    {
-                        Id = x.AddressId,
-                        Region = x.Address!.Region,
-                        District = x.Address!.District,
-                        Appartment = x.Address!.Appartment,
-                        House = x.Address!.House,
-                        PlanningStructure = x.Address!.PlanningStructure,
-                        Settlement = x.Address!.Settlement
-                    },
-                    Type = x.Type,
-                    Pictures = x.LocationPictures!.Select(p => new PictureViewModel
-                    {
-                        Id = p.PictureId,
-                        IsAvatar = p.IsAvatar,
-                        Path = p.Picture!.Path,
-                        CreatedAt = p.CreatedAt,
-                        UserId = p.Picture.UserId
-                    })
-                    .ToList()
-                })
+                .ProjectToViewModel()
                 .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
                 ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
 
@@ -64,32 +40,7 @@ namespace Application.Locations.Handlers
 
             var result = await locationQuery
                 .ApplyPagination(request)
-                .Select(x => new LocationListViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                    Address = new AddressViewModel
-                    {
-                        Id = x.AddressId,
-                        Region = x.Address!.Region,
-                        District = x.Address!.District,
-                        Appartment = x.Address!.Appartment,
-                        House = x.Address!.House,
-                        PlanningStructure = x.Address!.PlanningStructure,
-                        Settlement = x.Address!.Settlement
-                    },
-                    Type = x.Type,
-                    Pictures = x.LocationPictures!.Select(p => new PictureViewModel
-                    {
-                        Id = p.PictureId,
-                        IsAvatar = p.IsAvatar,
-                        Path = p.Picture!.Path,
-                        CreatedAt = p.CreatedAt,
-                        UserId = p.Picture.UserId
-                    })
-                    .ToList()
-                })
+                .ProjectToListViewModels()
                 .ToListAsync(cancellationToken);
 
             return result.AsPagedResult(request, await locationQuery.CountAsync(cancellationToken));
