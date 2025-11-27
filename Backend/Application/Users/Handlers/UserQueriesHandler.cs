@@ -15,6 +15,7 @@ namespace Application.Users.Handlers
         public async Task<UserViewModel> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
             var user = await dbContext.Users
+                .AsNoTracking()
                 .Select(x => new UserViewModel
                 {
                     Id = x.Id,
@@ -31,6 +32,7 @@ namespace Application.Users.Handlers
         public async Task<PagedResult<UserListViewModel>> Handle(GetUsersListQuery request, CancellationToken cancellationToken)
         {
             var userQuery = dbContext.Users
+                .AsNoTracking()
                 .OrderBy(x => x.Username)
                 .ApplySearch(request, x => x.Username);
 

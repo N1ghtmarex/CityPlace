@@ -19,6 +19,7 @@ namespace Application.Locations.Handlers
         public async Task<LocationViewModel> Handle(GetLocationQuery request, CancellationToken cancellationToken)
         {
             var location = await dbContext.Locations
+                .AsNoTracking()
                 .Include(x => x.Address)
                 .Select(x => new LocationViewModel
                 {
@@ -55,6 +56,7 @@ namespace Application.Locations.Handlers
         public async Task<PagedResult<LocationListViewModel>> Handle(GetLocationsListQuery request, CancellationToken cancellationToken)
         {
             var locationQuery = dbContext.Locations
+                .AsNoTracking()
                 .Where(x => !x.IsArchive)
                 .Include(x => x.Address)
                 .OrderBy(x => x.Name)
@@ -98,6 +100,7 @@ namespace Application.Locations.Handlers
             var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
 
             var userFavoriteQuery = dbContext.UserFavorites
+                .AsNoTracking()
                 .Include(x => x.Location)
                 .ThenInclude(x => x!.Address)
                 .Where(x => x.UserId == user.Id)

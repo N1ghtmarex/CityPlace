@@ -14,6 +14,7 @@ namespace Application.Addresses.Handlers
         public async Task<PagedResult<AddressListViewModel>> Handle(GetAddressesListQuery request, CancellationToken cancellationToken)
         {
             var addressQuery = dbContext.Addresses
+                .AsNoTracking()
                 .OrderBy(x => x.Region)
                 .ThenBy(x => x.Settlement)
                 .ThenBy(x => x.District)
