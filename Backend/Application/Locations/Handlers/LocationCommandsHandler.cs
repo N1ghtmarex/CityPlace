@@ -80,10 +80,7 @@ namespace Application.Locations.Handlers
                 address = createdAddress.Entity;
             }
 
-            existsLocation.Name = request.Body.Name;
-            existsLocation.Description = request.Body.Description;
-            existsLocation.Type = request.Body.LocationType;
-            existsLocation.AddressId = address.Id;
+            existsLocation = LocationMapper.MapToEntity(request.Body, existsLocation, address);
 
             await dbContext.SaveChangesAsync(cancellationToken);
 

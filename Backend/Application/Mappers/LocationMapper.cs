@@ -1,6 +1,7 @@
 ﻿using Application.Locations.Dtos;
 using Domain.Entities;
 using Domain.Enums;
+using MediatR;
 using Riok.Mapperly.Abstractions;
 
 namespace Application.Mappers;
@@ -27,5 +28,17 @@ public static partial class LocationMapper
 
     [MapValue(nameof(Location.Id), Use = nameof(@GeneralMapper.GenerateId))]
     [MapValue(nameof(Location.CreatedAt), Use = nameof(@GeneralMapper.SetCreatedAt))]
+
     public static partial Location MapToEntity(CreateLocationModel source, Address address, LocationType type);
+
+
+    public static Location MapToEntity(UpdateLocationModel newData, Location entity, Address address)
+    {
+        entity.Name = newData.Name;
+        entity.Description = newData.Description;
+        entity.Type = newData.LocationType;
+        entity.AddressId = address.Id;
+
+        return entity;
+    }
 }
