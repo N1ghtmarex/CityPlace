@@ -4,7 +4,6 @@ using Application.Locations.Commands;
 using Application.Mappers;
 using Core.Exceptions;
 using Domain;
-using Domain.Entities;
 using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +38,7 @@ namespace Application.Locations.Handlers
             }
 
             var existLocation = await dbContext.Locations
-                .SingleOrDefaultAsync(x => x.Name == request.Body.Name || x.Address == address, cancellationToken);
+                .SingleOrDefaultAsync(x => x.Name.ToLower() == request.Body.Name.ToLower() || x.Address == address, cancellationToken);
 
             if (existLocation != null)
             {
