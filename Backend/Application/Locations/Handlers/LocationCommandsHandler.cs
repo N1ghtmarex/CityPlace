@@ -24,28 +24,15 @@ namespace Application.Locations.Handlers
                 throw new ForbiddenException("Только администратор может добавлять новые локации!");
             }
 
-            var address = await dbContext.Addresses
-                .SingleOrDefaultAsync(x => x.Region == request.Body.Address.Region && x.District == request.Body.Address.District
-                    && x.Settlement == request.Body.Address.Settlement && x.PlanningStructure == request.Body.Address.PlanningStructure && x.House == request.Body.Address.House
-                    && x.Appartment == request.Body.Address.Appartment, cancellationToken);
-
-            if (address == null)
-            {
-                var addressToCreate = AddressMapper.MapToEntity(request.Body.Address);
-
-                var createdAddress = await dbContext.AddAsync(addressToCreate, cancellationToken);
-                address = createdAddress.Entity;
-            }
-
             var existLocation = await dbContext.Locations
-                .SingleOrDefaultAsync(x => x.Name.ToLower() == request.Body.Name.ToLower() || x.Address == address, cancellationToken);
+                .SingleOrDefaultAsync(x => x.Name.ToLower() == request.Body.Name.ToLower(), cancellationToken);
 
             if (existLocation != null)
             {
                 throw new ObjectExistsException("Локация с таким названием или адресом уже существует!");
             }
 
-            var locationToCreate = LocationMapper.MapToEntity(request.Body, address, request.Body.LocationType);
+            var locationToCreate = LocationMapper.MapToEntity(request.Body, request.Body.LocationType);
 
             var createdLocation = await dbContext.AddAsync(locationToCreate, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -66,20 +53,7 @@ namespace Application.Locations.Handlers
                 .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
                 ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
 
-            var address = await dbContext.Addresses
-                .SingleOrDefaultAsync(x => x.Region == request.Body.Address.Region && x.District == request.Body.Address.District
-                    && x.Settlement == request.Body.Address.Settlement && x.PlanningStructure == request.Body.Address.PlanningStructure
-                    && x.House == request.Body.Address.House && x.Appartment == request.Body.Address.Appartment, cancellationToken);
-
-            if (address == null)
-            {
-                var addressToCreate = AddressMapper.MapToEntity(request.Body.Address);
-
-                var createdAddress = await dbContext.AddAsync(addressToCreate, cancellationToken);
-                address = createdAddress.Entity;
-            }
-
-            existsLocation = LocationMapper.MapToEntity(request.Body, existsLocation, address);
+            existsLocation = LocationMapper.MapToEntity(request.Body, existsLocation);
 
             await dbContext.SaveChangesAsync(cancellationToken);
 

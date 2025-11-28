@@ -21,15 +21,10 @@ namespace Domain.EntityConfigurations
 
             builder.Property(x => x.Description).IsRequired(false);
             builder.Property(x => x.Type).IsRequired();
-            builder.Property(x => x.AddressId)
-                .IsRequired()
-                .HasConversion(
-                    x => x.ToString(),
-                    x => Ulid.Parse(x));
-            builder.HasOne(x => x.Address)
-                .WithMany()
-                .HasForeignKey(x => x.AddressId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x => x.Latitude).IsRequired();
+            builder.Property(x => x.Longitude).IsRequired();
+
+            builder.HasIndex(x => new { x.Latitude, x.Longitude }).IsUnique(false);
 
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.UpdatedAt).IsRequired(false);

@@ -8,7 +8,6 @@ namespace Application.Mappers;
 
 [Mapper]
 [UseStaticMapper(typeof(GeneralMapper))]
-[UseStaticMapper(typeof(AddressMapper))]
 [UseStaticMapper(typeof(PictureMapper))]
 public static partial class LocationMapper
 {
@@ -29,15 +28,16 @@ public static partial class LocationMapper
     [MapValue(nameof(Location.Id), Use = nameof(@GeneralMapper.GenerateId))]
     [MapValue(nameof(Location.CreatedAt), Use = nameof(@GeneralMapper.SetCreatedAt))]
 
-    public static partial Location MapToEntity(CreateLocationModel source, Address address, LocationType type);
+    public static partial Location MapToEntity(CreateLocationModel source, LocationType type);
 
 
-    public static Location MapToEntity(UpdateLocationModel newData, Location entity, Address address)
+    public static Location MapToEntity(UpdateLocationModel newData, Location entity)
     {
         entity.Name = newData.Name;
         entity.Description = newData.Description;
         entity.Type = newData.LocationType;
-        entity.AddressId = address.Id;
+        entity.Longitude = newData.Longitude;
+        entity.Latitude = newData.Latitude;
 
         return entity;
     }

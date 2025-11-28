@@ -1,5 +1,4 @@
 ﻿using Abstractions;
-using Application.Addresses.Dtos;
 using Application.Locations.Dtos;
 using Application.Locations.Queries;
 using Application.Mappers;
@@ -21,7 +20,6 @@ namespace Application.Locations.Handlers
         {
             var location = await dbContext.Locations
                 .AsNoTracking()
-                .Include(x => x.Address)
                 .Include(x => x.LocationPictures)
                     .ThenInclude(x => x.Picture)
                 .ProjectToViewModel()
@@ -36,7 +34,6 @@ namespace Application.Locations.Handlers
             var locationQuery = dbContext.Locations
                 .AsNoTracking()
                 .Where(x => !x.IsArchive)
-                .Include(x => x.Address)
                 .Include(x => x.LocationPictures)
                     .ThenInclude(x => x.Picture)
                 .OrderBy(x => x.Name)
@@ -57,7 +54,6 @@ namespace Application.Locations.Handlers
             var userFavoriteQuery = dbContext.UserFavorites
                 .AsNoTracking()
                 .Include(x => x.Location)
-                .ThenInclude(x => x!.Address)
                 .Include(x => x.Location.LocationPictures)
                     .ThenInclude(x => x.Picture)
                 .Where(x => x.UserId == user.Id)
