@@ -1,9 +1,9 @@
 ﻿using Abstractions;
 using Application.Abstractions.Models;
+using Application.Mappers;
 using Application.Pictures.Commands;
 using Core.Exceptions;
 using Domain;
-using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,28 +20,13 @@ namespace Application.Pictures.Handlers
                 .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
                 ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
             
-            var picture = new Picture
-            {
-                Id = Ulid.NewUlid(),
-                Path = string.Empty,
-                CreatedAt = DateTime.UtcNow,
-                IsArchive = false,
-                UserId = user.Id
-            };
+            var picture = PictureMapper.MapToEntity(string.Empty, user.Id);
 
             picture.Path = await fileService.SaveFileAsync(user.Id.ToString(), picture.Id.ToString(), request.Body.File, cancellationToken);
 
             var createdPicture = await dbContext.AddAsync(picture, cancellationToken);
 
-            var locationPictureBind = new LocationPictureBind
-            {
-                Id = Ulid.NewUlid(),
-                IsAvatar = false,
-                LocationId = location.Id,
-                PictureId = picture.Id,
-                CreatedAt = DateTime.UtcNow,
-                IsArchive = false
-            };
+            var locationPictureBind = PictureMapper.MapToBind(locationId: location.Id, pictureId: picture.Id);
 
             await dbContext.AddAsync(locationPictureBind, cancellationToken);
 

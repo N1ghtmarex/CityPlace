@@ -103,13 +103,8 @@ namespace Application.Locations.Handlers
 
             if (userLocationBind == null)
             {
-                var userLocationBindToCreate = new UserFavorite
-                {
-                    Id = Ulid.NewUlid(),
-                    LocationId = location.Id,
-                    UserId = user.Id,
-                    CreatedAt = DateTime.UtcNow,
-                };
+                
+                var userLocationBindToCreate = UserFavoriteMapper.MapToEntity(userId: user.Id, locationId: location.Id);
 
                 var createdUserLocationBind = await dbContext.AddAsync(userLocationBindToCreate, cancellationToken);
                 await dbContext.SaveChangesAsync(cancellationToken);

@@ -18,4 +18,10 @@ public static partial class UserFavoriteMapper
     public static partial LocationListViewModel ProjectToListViewModel(UserFavorite source);
 
     public static partial List<LocationListViewModel> MapToListViewModel(List<UserFavorite> source);
+
+
+    [MapValue(nameof(UserFavorite.Id), Use = nameof(@GeneralMapper.GenerateId))]
+    [MapValue(nameof(UserFavorite.CreatedAt), Use = nameof(@GeneralMapper.SetCreatedAt))]
+    [MapProperty(nameof(userId), nameof(UserFavorite.UserId))]
+    public static partial UserFavorite MapToEntity(Ulid userId, Ulid locationId);
 }

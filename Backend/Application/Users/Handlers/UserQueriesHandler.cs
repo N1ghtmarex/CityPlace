@@ -1,4 +1,5 @@
-﻿using Application.Users.Dtos;
+﻿using Application.Mappers;
+using Application.Users.Dtos;
 using Application.Users.Queries;
 using Core.EntityFramework.Features.SearchPagination;
 using Core.EntityFramework.Features.SearchPagination.Models;
@@ -16,13 +17,7 @@ namespace Application.Users.Handlers
         {
             var user = await dbContext.Users
                 .AsNoTracking()
-                .Select(x => new UserViewModel
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    Role = x.Role,
-                    CreatedAt = x.CreatedAt
-                })
+                .ProjectToViewModel()
                 .SingleOrDefaultAsync(x => x.Id == request.UserId, cancellationToken)
                 ?? throw new ObjectNotFoundException($"Пользователь с идентификатором {request.UserId} не найден!"); ;
 
@@ -38,13 +33,7 @@ namespace Application.Users.Handlers
 
             var result = await userQuery
                 .ApplyPagination(request)
-                .Select(x => new UserListViewModel
-                { 
-                    Id = x.Id,
-                    Username = x.Username,
-                    Role = x.Role,
-                    CreatedAt = x.CreatedAt,
-                })
+                .ProjectToListViewModel()
                 .ToListAsync(cancellationToken);
 
             return result.AsPagedResult(request, await userQuery.CountAsync(cancellationToken));
