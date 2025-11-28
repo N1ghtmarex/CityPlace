@@ -22,6 +22,8 @@ namespace Application.Locations.Handlers
             var location = await dbContext.Locations
                 .AsNoTracking()
                 .Include(x => x.Address)
+                .Include(x => x.LocationPictures)
+                    .ThenInclude(x => x.Picture)
                 .ProjectToViewModel()
                 .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
                 ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
@@ -35,6 +37,8 @@ namespace Application.Locations.Handlers
                 .AsNoTracking()
                 .Where(x => !x.IsArchive)
                 .Include(x => x.Address)
+                .Include(x => x.LocationPictures)
+                    .ThenInclude(x => x.Picture)
                 .OrderBy(x => x.Name)
                 .ApplySearch(request, x => x.Name);
 
@@ -54,30 +58,17 @@ namespace Application.Locations.Handlers
                 .AsNoTracking()
                 .Include(x => x.Location)
                 .ThenInclude(x => x!.Address)
+                .Include(x => x.Location.LocationPictures)
+                    .ThenInclude(x => x.Picture)
                 .Where(x => x.UserId == user.Id)
                 .OrderBy(x => x.Location!.Name)
                 .ApplySearch(request, x => x.Location!.Name);
 
-            var result = await userFavoriteQuery
+            var userFavoriteList = await userFavoriteQuery
                 .ApplyPagination(request)
-                .Select(x => new LocationListViewModel
-                {
-                    Id = x.LocationId,
-                    Name = x.Location!.Name,
-                    Description = x.Location.Description,
-                    Type = x.Location.Type,
-                    Address = new AddressViewModel
-                    {
-                        Id = x.Location.Address!.Id,
-                        District = x.Location.Address.District,
-                        Appartment = x.Location.Address.Appartment,
-                        House = x.Location.Address.House,
-                        PlanningStructure = x.Location.Address.PlanningStructure,
-                        Region = x.Location.Address.Region,
-                        Settlement = x.Location.Address.Settlement
-                    }
-                })
                 .ToListAsync(cancellationToken);
+
+            var result = UserFavoriteMapper.MapToListViewModel(userFavoriteList);
 
             return result.AsPagedResult(request, await userFavoriteQuery.CountAsync(cancellationToken));
         }
