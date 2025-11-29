@@ -9,7 +9,12 @@ namespace Domain.EntityConfigurations
         public void Configure(EntityTypeBuilder<Address> builder)
         {
             builder.ToTable("address");
-            builder.HasNoKey();
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
+                .IsRequired()
+                .HasConversion(
+                    x => x.ToString(),
+                    x => Ulid.Parse(x));
         }
     }
 }

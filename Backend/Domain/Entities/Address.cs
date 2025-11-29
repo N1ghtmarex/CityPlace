@@ -5,7 +5,7 @@ namespace Domain.Entities
     /// <summary>
     /// Адрес
     /// </summary>
-    public record Address
+    public class Address : BaseEntity<Ulid>
     {
         /// <summary>
         /// Субъект РФ
@@ -66,6 +66,5 @@ namespace Domain.Entities
         /// Идентификатор помещения в системе FIAS
         /// </summary>
         public required string AppartmentFiasId { get; init; }
-
     }
 }

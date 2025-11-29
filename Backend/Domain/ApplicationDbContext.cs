@@ -7,7 +7,6 @@ namespace Domain
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
-        public DbSet<Address> Addresses { get; set; }
         public DbSet<Location> Locations { get; set;}
         public DbSet<User> Users { get; set; }
         public DbSet<UserFavorite> UserFavorites { get; set; }

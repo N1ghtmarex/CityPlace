@@ -29,6 +29,7 @@ namespace Api.StartupConfigurations
                         options.IncludeXmlComments(() => new XPathDocument(doc.CreateReader()), includeControllerXmlComments: true);
 
                         options.SchemaFilter<UlidSchemaFilter>();
+                        options.SchemaFilter<EnumSchemaFilter>();
                     });
 
                 options.AddSecurityDefinition(KeycloakAuthConfiguration.AdminApiScheme,

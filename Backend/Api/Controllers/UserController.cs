@@ -1,6 +1,9 @@
 ﻿using Api.StartupConfigurations;
 using Application.Abstractions.Models;
 using Application.Users.Commands;
+using Application.Users.Dtos;
+using Application.Users.Queries;
+using Core.EntityFramework.Features.SearchPagination.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +15,12 @@ namespace Api.Controllers
     [Authorize]
     public class UserController(ISender sender) : ControllerBase
     {
+        /// <summary>
+        /// Регистрация пользователя
+        /// </summary>
+        /// <param name="command">Модель запроса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
         [HttpPost("registration")]
         [AllowAnonymous]
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> RegisterUser([FromQuery] CreateUserCommand command, CancellationToken cancellationToken)
@@ -19,10 +28,28 @@ namespace Api.Controllers
             return await sender.Send(command, cancellationToken);
         }
 
-        [HttpGet]
-        public IActionResult CheckAuth()
+        /// <summary>
+        /// Получение конкретного пользователя
+        /// </summary>
+        /// <param name="query">Модель запроса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        [HttpGet("{UserId}")]
+        public async Task<UserViewModel> GetUser([FromQuery] GetUserQuery query, CancellationToken cancellationToken)
         {
-            return Ok();
+            return await sender.Send(query, cancellationToken);
+        }
+
+        /// <summary>
+        /// Получение списка пользователей
+        /// </summary>
+        /// <param name="query">Модель запроса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<PagedResult<UserListViewModel>> GetUsersList([FromQuery] GetUsersListQuery query, CancellationToken cancellationToken)
+        {
+            return await sender.Send(query, cancellationToken);
         }
     }
 }
