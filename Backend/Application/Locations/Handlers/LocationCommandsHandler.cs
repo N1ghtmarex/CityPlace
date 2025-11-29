@@ -4,7 +4,6 @@ using Application.Locations.Commands;
 using Application.Mappers;
 using Core.Exceptions;
 using Domain;
-using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,11 +17,6 @@ namespace Application.Locations.Handlers
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
         {
             var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
-
-            if (user.Role != UserRole.Admin)
-            {
-                throw new ForbiddenException("Только администратор может добавлять новые локации!");
-            }
 
             var existLocation = await dbContext.Locations
                 .SingleOrDefaultAsync(x => x.Name.ToLower() == request.Body.Name.ToLower(), cancellationToken);
@@ -43,11 +37,6 @@ namespace Application.Locations.Handlers
         public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> Handle(UpdateLocationCommand request, CancellationToken cancellationToken)
         {
             var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
-
-            if (user.Role != UserRole.Admin)
-            {
-                throw new ForbiddenException("Только администратор может редактировать локации!");
-            }
 
             var existsLocation = await dbContext.Locations
                 .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)

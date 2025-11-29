@@ -25,7 +25,7 @@ namespace Api.Http
 
             IdentityUserId = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            UserRoles = user.FindAll("role").Select(x => x.Value).ToArray();
+            UserRoles = user.FindAll(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToArray();
 
             MethodName = context.Request.Method;
 
