@@ -1,4 +1,3 @@
-import { Address } from "./address";
 import { Picture } from "./picture";
 
 export interface Location {
@@ -6,6 +5,7 @@ export interface Location {
   name: string;
   description: string;
   type: string;
-  address: Address;
+  latitude: number;
+  longitude: number;
   pictures: Picture[];
 }

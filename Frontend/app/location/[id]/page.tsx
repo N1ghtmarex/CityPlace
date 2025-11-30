@@ -2,8 +2,8 @@
 import { Location } from "@/types/location";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import axios from 'axios';
 import { load } from "@2gis/mapgl";
+import { getLocation } from "@/app/services/location.service";
 
 interface Props {
   params: Promise<{
@@ -20,24 +20,13 @@ export default function LocationPage({ params }: Props) {
   const [lon, setLon] = useState(Number);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
 
-  const getLocation = () => {
-    axios.get(`${apiUrl}/api/locations/${id}`)
-        .then(response => {
-            setLocation(response.data);
-            axios.get(`https://catalog.api.2gis.com/3.0/items/geocode?q=${response.data.address.settlement}, ${response.data.address.planningStructure}, ${response.data.address.house}&fields=items.point&key=9a5ff141-c68c-4a4b-8e28-0612a9894449`)
-                .then(res => {
-                    console.log(res)
-                    const lon = res.data.result.items[0].point.lon;
-                    const lat = res.data.result.items[0].point.lat;
-                    setCoordinates([lon, lat]);
-                }
-            );
-        }
-    )
+  const loadLocation = async () => {
+    const location = await getLocation(id);
+    setLocation(location);
   }
 
   useEffect(() => {
-    getLocation();
+    loadLocation();
   }, []);
 
   useEffect(() => {
@@ -133,8 +122,7 @@ export default function LocationPage({ params }: Props) {
                         </div>
 
                         <div className="flex items-center text-gray-600 mb-6">
-                            <span>{location.address.region}, {location.address.settlement}, {location.address.district}<br/>
-                                {location.address.planningStructure}, {location.address.house}</span>
+                            <span>Геолокация: {location.latitude}; {location.longitude}</span>
                         </div>
 
                         <div className="prose max-w-none">

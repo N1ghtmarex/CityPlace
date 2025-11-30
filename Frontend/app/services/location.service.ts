@@ -2,6 +2,13 @@ import { CreateLocationRequset } from '@/src/models/createLocationRequestModel';
 import axiosInstance from '../../src/axios'
 import { buildQueryString } from "./httpHelper.service";
 
+export async function getLocation(id: string) {
+    const response = await axiosInstance.get(`/api/locations/${id}`)
+
+    return await response.data;
+    
+}
+
 export async function getLocations(searchQuery: string | null = null, limit: number | null = null, offset: number | null = null) : Promise<any> {
     const queryParams = {
         SearchQuery: searchQuery,
