@@ -10,13 +10,14 @@
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>1591; 10006; S3925; S3343; S2955; S3343; S3236; S1125; S3260; S2326; S1006; S112; S2325; S3881</NoWarn>
+    <NoWarn>1591; 10006; S3925; S3343; S2955; S3343; S3236; S1125; S3260; S2326; S1006; S112; S2325; S3881; CS1573; S1118</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
     <PackageReference Include="IdentityModel" Version="6.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="9.0.7" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="10.13.0.120203">

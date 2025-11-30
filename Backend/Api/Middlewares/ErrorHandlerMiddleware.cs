@@ -46,6 +46,14 @@ namespace Api.Middlewares
                 var result = JsonSerializer.Serialize(new BadResponseModel { Message = e.Message });
                 await response.WriteAsync(result);
             }
+            catch (ForbiddenException e)
+            {
+                var response = context.Response;
+                response.ContentType = "application/json";
+                response.StatusCode = (int)HttpStatusCode.Forbidden;
+                var result = JsonSerializer.Serialize(new BadResponseModel { Message = e.Message });
+                await response.WriteAsync(result);
+            }
         }
     }
 }
