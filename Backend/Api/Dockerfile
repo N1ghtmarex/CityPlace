@@ -6,7 +6,7 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 
-# Этот этап используется для сборки проекта службы
+# Этот этап используется для сборки проекта службы 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
