@@ -2,7 +2,8 @@ name: Build Backend Docker Image
 
 on:
   push:
-
+    paths: 
+      - 'Backend/**'
 jobs:
   build:
     runs-on: ubuntu-24.04
