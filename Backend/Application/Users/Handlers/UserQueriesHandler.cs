@@ -1,3 +1,4 @@
+using Abstractions;
 using Application.Mappers;
 using Application.Users.Dtos;
 using Application.Users.Queries;
@@ -6,7 +7,6 @@ using Core.EntityFramework.Features.SearchPagination.Models;
 using Core.Exceptions;
 using Domain;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Users.Handlers
