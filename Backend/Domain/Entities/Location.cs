@@ -24,14 +24,14 @@ namespace Domain.Entities
         public required LocationType Type { get; set; }
 
         /// <summary>
-        /// Идентификатор адреса
+        /// Широта (геолокация)
         /// </summary>
-        public required Ulid AddressId { get; set; }
+        public required double Latitude { get; set; }
 
         /// <summary>
-        /// Адрес
+        /// Долгота (геолокация)
         /// </summary>
-        public Address? Address { get; set; }
+        public required double Longitude { get; set; }
 
         /// <summary>
         /// Изображения локации

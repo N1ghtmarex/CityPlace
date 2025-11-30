@@ -30,6 +30,7 @@ builder.Services.ConfigureOptions<KeycloakConfigurationSetup>();
 builder.Services.ConfigureOptions<KeycloakScopesConfigurationSetup>();
 
 builder.Services.AddKeycloakConfiguration();
+builder.Services.AddMinioConfiguration(builder.Configuration);
 
 builder.Services.Configure<JsonOptions>(options =>
 {

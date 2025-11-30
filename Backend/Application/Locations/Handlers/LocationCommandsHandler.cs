@@ -1,10 +1,9 @@
 ﻿using Abstractions;
 using Application.Abstractions.Models;
 using Application.Locations.Commands;
+using Application.Mappers;
 using Core.Exceptions;
 using Domain;
-using Domain.Entities;
-using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,56 +18,15 @@ namespace Application.Locations.Handlers
         {
             var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
 
-            if (user.Role != UserRole.Admin)
-            {
-                throw new ForbiddenException("Только администратор может добавлять новые локации!");
-            }
-
-            var address = await dbContext.Addresses
-                .SingleOrDefaultAsync(x => x.Region == request.Body.Address.Region && x.District == request.Body.Address.District
-                    && x.Settlement == request.Body.Address.Settlement && x.PlanningStructure == request.Body.Address.PlanningStructure && x.House == request.Body.Address.House
-                    && x.Appartment == request.Body.Address.Appartment, cancellationToken);
-
-            if (address == null)
-            {
-                var addressToCreate = new Address
-                {
-                    Id = Ulid.NewUlid(),
-                    Region = request.Body.Address.Region,
-                    RegionFiasId = Ulid.NewUlid().ToString(),
-                    District = request.Body.Address.District,
-                    DistrictFiasId = Ulid.NewUlid().ToString(),
-                    Settlement = request.Body.Address.Settlement,
-                    SettlementFiasId = Ulid.NewUlid().ToString(),
-                    PlanningStructure = request.Body.Address.PlanningStructure,
-                    PlanningStructureFiasId = Ulid.NewUlid().ToString(),
-                    House = request.Body.Address.House,
-                    HouseFiasId = Ulid.NewUlid().ToString(),
-                    Appartment = request.Body.Address.Appartment,
-                    AppartmentFiasId = Ulid.NewUlid().ToString()
-                };
-
-                var createdAddress = await dbContext.AddAsync(addressToCreate, cancellationToken);
-                address = createdAddress.Entity;
-            }
-
             var existLocation = await dbContext.Locations
-                .SingleOrDefaultAsync(x => x.Name == request.Body.Name || x.Address == address, cancellationToken);
+                .SingleOrDefaultAsync(x => x.Name.ToLower() == request.Body.Name.ToLower(), cancellationToken);
 
             if (existLocation != null)
             {
                 throw new ObjectExistsException("Локация с таким названием или адресом уже существует!");
             }
 
-            var locationToCreate = new Location
-            {
-                Id = Ulid.NewUlid(),
-                Name = request.Body.Name,
-                Description = request.Body.Description,
-                Type = request.Body.LocationType,
-                AddressId = address.Id,
-                CreatedAt = DateTime.UtcNow,
-            };
+            var locationToCreate = LocationMapper.MapToEntity(request.Body, request.Body.LocationType);
 
             var createdLocation = await dbContext.AddAsync(locationToCreate, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -80,47 +38,11 @@ namespace Application.Locations.Handlers
         {
             var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
 
-            if (user.Role != UserRole.Admin)
-            {
-                throw new ForbiddenException("Только администратор может редактировать локации!");
-            }
-
             var existsLocation = await dbContext.Locations
                 .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
                 ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
 
-            var address = await dbContext.Addresses
-                .SingleOrDefaultAsync(x => x.Region == request.Body.Address.Region && x.District == request.Body.Address.District
-                    && x.Settlement == request.Body.Address.Settlement && x.PlanningStructure == request.Body.Address.PlanningStructure
-                    && x.House == request.Body.Address.House && x.Appartment == request.Body.Address.Appartment, cancellationToken);
-
-            if (address == null)
-            {
-                var addressToCreate = new Address
-                {
-                    Id = Ulid.NewUlid(),
-                    Region = request.Body.Address.Region,
-                    RegionFiasId = Ulid.NewUlid().ToString(),
-                    District = request.Body.Address.District,
-                    DistrictFiasId = Ulid.NewUlid().ToString(),
-                    Settlement = request.Body.Address.Settlement,
-                    SettlementFiasId = Ulid.NewUlid().ToString(),
-                    PlanningStructure = request.Body.Address.PlanningStructure,
-                    PlanningStructureFiasId = Ulid.NewUlid().ToString(),
-                    House = request.Body.Address.House,
-                    HouseFiasId = Ulid.NewUlid().ToString(),
-                    Appartment = request.Body.Address.Appartment,
-                    AppartmentFiasId = Ulid.NewUlid().ToString()
-                };
-
-                var createdAddress = await dbContext.AddAsync(addressToCreate, cancellationToken);
-                address = createdAddress.Entity;
-            }
-
-            existsLocation.Name = request.Body.Name;
-            existsLocation.Description = request.Body.Description;
-            existsLocation.Type = request.Body.LocationType;
-            existsLocation.AddressId = address.Id;
+            existsLocation = LocationMapper.MapToEntity(request.Body, existsLocation);
 
             await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -140,13 +62,8 @@ namespace Application.Locations.Handlers
 
             if (userLocationBind == null)
             {
-                var userLocationBindToCreate = new UserFavorite
-                {
-                    Id = Ulid.NewUlid(),
-                    LocationId = location.Id,
-                    UserId = user.Id,
-                    CreatedAt = DateTime.UtcNow,
-                };
+                
+                var userLocationBindToCreate = UserFavoriteMapper.MapToEntity(userId: user.Id, locationId: location.Id);
 
                 var createdUserLocationBind = await dbContext.AddAsync(userLocationBindToCreate, cancellationToken);
                 await dbContext.SaveChangesAsync(cancellationToken);

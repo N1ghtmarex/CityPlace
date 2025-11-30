@@ -1,31 +1,32 @@
 ﻿using Abstractions;
-using Domain.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Minio;
+using Minio.DataModel.Args;
 
 namespace Infrastructure.Services
 {
-    public class FileService : IFileService
+    public class FileService(IMinioClient minio, IConfiguration configuration) : IFileService
     {
-        private readonly string directory = Path.Combine(Directory.GetParent(Environment.CurrentDirectory)?.ToString() ?? string.Empty);
-
         public async Task<string> SaveFileAsync(string additionalPath, string fileName, IFormFile file, CancellationToken cancellationToken)
         {
-            var filePath = Path.Combine("Api", Path.Combine("wwwroot", Path.Combine("Uploads", additionalPath)));
-
-            var fullPath = Path.Combine(directory, filePath);
-
-            if (!Directory.Exists(fullPath))
-            {
-                Directory.CreateDirectory(fullPath);
-            }
-
-            await using (var stream = new FileStream(Path.Combine(fullPath, $"{fileName}{Path.GetExtension(file.FileName)}"), FileMode.Create))
+            await using (var stream = new MemoryStream())
             {
                 await file.CopyToAsync(stream, cancellationToken);
-                await stream.FlushAsync(cancellationToken);
+                stream.Position = 0;
+
+                await minio.PutObjectAsync(new PutObjectArgs()
+                    .WithBucket(configuration["MinIO:PicturesBucketName"])
+                    .WithObject(fileName)
+                    .WithStreamData(stream)
+                    .WithObjectSize(file.Length)
+                    .WithContentType(file.ContentType)
+                );
+
+                await stream.FlushAsync(cancellationToken);                
             }
 
-            return Path.Combine(Path.Combine("Uploads", additionalPath), $"{fileName}{Path.GetExtension(file.FileName)}");
+            return fileName;
         }
     }
 }

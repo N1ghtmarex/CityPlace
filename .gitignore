@@ -421,5 +421,7 @@ FodyWeavers.xsd
 Backend/Api/appsettings.Development.json
 /Backend/Api/appsettings.Development.json
 
+/Backend/Application/Generated/
+
 #wwwroot
 /Backend/Api/wwwroot

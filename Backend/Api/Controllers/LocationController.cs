@@ -15,18 +15,6 @@ namespace Api.Controllers
     public class LocationController(ISender sender) : ControllerBase
     {
         /// <summary>
-        /// Добавление локации
-        /// </summary>
-        /// <param name="command">Модель запроса</param>
-        /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> CreateLocation([FromQuery] CreateLocationCommand command, CancellationToken cancellationToken)
-        {
-            return await sender.Send(command, cancellationToken);
-        }
-
-        /// <summary>
         /// Получение конкретной локации
         /// </summary>
         /// <param name="query">Модель запроса</param>
@@ -50,18 +38,6 @@ namespace Api.Controllers
         public async Task<PagedResult<LocationListViewModel>> GetLocationsList([FromQuery] GetLocationsListQuery query, CancellationToken cancellationToken)
         {
             return await sender.Send(query, cancellationToken);
-        }
-
-        /// <summary>
-        /// Обновление локации
-        /// </summary>
-        /// <param name="command">Модель запроса</param>
-        /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns></returns>
-        [HttpPut("{LocationId}")]
-        public async Task<CreatedOrUpdatedEntityViewModel<Ulid>> UpdateLocation([FromQuery] UpdateLocationCommand command, CancellationToken cancellationToken)
-        {
-            return await sender.Send(command, cancellationToken);
         }
 
         /// <summary>

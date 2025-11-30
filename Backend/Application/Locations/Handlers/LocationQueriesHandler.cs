@@ -1,7 +1,7 @@
 ﻿using Abstractions;
-using Application.Addresses.Dtos;
 using Application.Locations.Dtos;
 using Application.Locations.Queries;
+using Application.Mappers;
 using Application.Pictures.Dtos;
 using Core.EntityFramework.Features.SearchPagination;
 using Core.EntityFramework.Features.SearchPagination.Models;
@@ -24,33 +24,10 @@ namespace Application.Locations.Handlers
         public async Task<LocationViewModel> Handle(GetLocationQuery request, CancellationToken cancellationToken)
         {
             var location = await dbContext.Locations
-                .Include(x => x.Address)
-                .Select(x => new LocationViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                    Address = new AddressViewModel
-                    {
-                        Id = x.AddressId,
-                        Region = x.Address!.Region,
-                        District = x.Address!.District,
-                        Appartment = x.Address!.Appartment,
-                        House = x.Address!.House,
-                        PlanningStructure = x.Address!.PlanningStructure,
-                        Settlement = x.Address!.Settlement
-                    },
-                    Type = locationService.GetDescription(x.Type),
-                    Pictures = x.LocationPictures!.Select(p => new PictureViewModel
-                    {
-                        Id = p.PictureId,
-                        IsAvatar = p.IsAvatar,
-                        Path = p.Picture!.Path,
-                        CreatedAt = p.CreatedAt,
-                        UserId = p.Picture.UserId
-                    })
-                    .ToList()
-                })
+                .AsNoTracking()
+                .Include(x => x.LocationPictures)
+                    .ThenInclude(x => x.Picture)
+                .ProjectToViewModel()
                 .SingleOrDefaultAsync(x => x.Id == request.LocationId, cancellationToken)
                 ?? throw new ObjectNotFoundException($"Локация с идентификатором \"{request.LocationId}\" не найдена!");
 
@@ -60,39 +37,16 @@ namespace Application.Locations.Handlers
         public async Task<PagedResult<LocationListViewModel>> Handle(GetLocationsListQuery request, CancellationToken cancellationToken)
         {
             var locationQuery = dbContext.Locations
+                .AsNoTracking()
                 .Where(x => !x.IsArchive)
-                .Include(x => x.Address)
+                .Include(x => x.LocationPictures)
+                    .ThenInclude(x => x.Picture)
                 .OrderBy(x => x.Name)
                 .ApplySearch(request, x => x.Name);
 
             var result = await locationQuery
                 .ApplyPagination(request)
-                .Select(x => new LocationListViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                    Address = new AddressViewModel
-                    {
-                        Id = x.AddressId,
-                        Region = x.Address!.Region,
-                        District = x.Address!.District,
-                        Appartment = x.Address!.Appartment,
-                        House = x.Address!.House,
-                        PlanningStructure = x.Address!.PlanningStructure,
-                        Settlement = x.Address!.Settlement
-                    },
-                    Type = locationService.GetDescription(x.Type),
-                    Pictures = x.LocationPictures!.Select(p => new PictureViewModel
-                    {
-                        Id = p.PictureId,
-                        IsAvatar = p.IsAvatar,
-                        Path = p.Picture!.Path,
-                        CreatedAt = p.CreatedAt,
-                        UserId = p.Picture.UserId
-                    })
-                    .ToList()
-                })
+                .ProjectToListViewModels()
                 .ToListAsync(cancellationToken);
 
             return result.AsPagedResult(request, await locationQuery.CountAsync(cancellationToken));
@@ -103,41 +57,19 @@ namespace Application.Locations.Handlers
             var user = await userService.GetUserByExternalIdAsync(httpContext.IdentityUserId, cancellationToken);
 
             var userFavoriteQuery = dbContext.UserFavorites
+                .AsNoTracking()
                 .Include(x => x.Location)
-                .ThenInclude(x => x!.Address)
+                .Include(x => x.Location.LocationPictures)
+                    .ThenInclude(x => x.Picture)
                 .Where(x => x.UserId == user.Id)
                 .OrderBy(x => x.Location!.Name)
                 .ApplySearch(request, x => x.Location!.Name);
 
-            var result = await userFavoriteQuery
+            var userFavoriteList = await userFavoriteQuery
                 .ApplyPagination(request)
-                .Select(x => new LocationListViewModel
-                {
-                    Id = x.LocationId,
-                    Name = x.Location!.Name,
-                    Description = x.Location.Description,
-                    Type = locationService.GetDescription(x.Location.Type),
-                    Address = new AddressViewModel
-                    {
-                        Id = x.Location.Address!.Id,
-                        District = x.Location.Address.District,
-                        Appartment = x.Location.Address.Appartment,
-                        House = x.Location.Address.House,
-                        PlanningStructure = x.Location.Address.PlanningStructure,
-                        Region = x.Location.Address.Region,
-                        Settlement = x.Location.Address.Settlement
-                    },
-                    Pictures = x.Location.LocationPictures!.Select(p => new PictureViewModel
-                    {
-                        Id = p.PictureId,
-                        IsAvatar = p.IsAvatar,
-                        Path = p.Picture!.Path,
-                        CreatedAt = p.CreatedAt,
-                        UserId = p.Picture.UserId
-                    })
-                    .ToList()
-                })
                 .ToListAsync(cancellationToken);
+
+            var result = UserFavoriteMapper.MapToListViewModel(userFavoriteList);
 
             return result.AsPagedResult(request, await userFavoriteQuery.CountAsync(cancellationToken));
         }

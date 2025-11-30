@@ -1,5 +1,4 @@
-﻿using Application.Addresses.Dtos;
-using Application.Pictures.Dtos;
+﻿using Application.Pictures.Dtos;
 using Domain.Enums;
 
 namespace Application.Locations.Dtos
@@ -30,9 +29,18 @@ namespace Application.Locations.Dtos
         public required string Type { get; init; }
 
         /// <summary>
-        /// Модель адреса
+        /// Широта (геолокация)
         /// </summary>
-        public required AddressViewModel Address { get; init; }
+        public required double Latitude { get; set; }
+
+        /// <summary>
+        /// Долгота (геолокация)
+        /// </summary>
+        public required double Longitude { get; set; }
+
+        /// <summary>
+        /// Список изображений
+        /// </summary>
         public List<PictureViewModel>? Pictures { get; init; }
     }
 }

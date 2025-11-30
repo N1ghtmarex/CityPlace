@@ -1,6 +1,4 @@
-﻿using Application.Addresses.Dtos;
-using Domain.Entities;
-using Domain.Enums;
+﻿using Domain.Enums;
 
 namespace Application.Locations.Dtos
 {
@@ -22,8 +20,13 @@ namespace Application.Locations.Dtos
         public required LocationType LocationType { get; init; }
 
         /// <summary>
-        /// Адрес
+        /// Широта (геолокация)
         /// </summary>
-        public required CreateAddressModel Address { get; init; }
+        public required double Latitude { get; set; }
+
+        /// <summary>
+        /// Долгота (геолокация)
+        /// </summary>
+        public required double Longitude { get; set; }
     }
 }

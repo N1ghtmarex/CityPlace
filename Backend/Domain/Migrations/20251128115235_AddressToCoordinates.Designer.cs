@@ -3,6 +3,7 @@ using System;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251128115235_AddressToCoordinates")]
+    partial class AddressToCoordinates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,78 +24,6 @@ namespace Domain.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Domain.Entities.Address", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Appartment")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("appartment");
-
-                    b.Property<string>("AppartmentFiasId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("appartment_fias_id");
-
-                    b.Property<string>("District")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("district");
-
-                    b.Property<string>("DistrictFiasId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("district_fias_id");
-
-                    b.Property<string>("House")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("house");
-
-                    b.Property<string>("HouseFiasId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("house_fias_id");
-
-                    b.Property<string>("PlanningStructure")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("planning_structure");
-
-                    b.Property<string>("PlanningStructureFiasId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("planning_structure_fias_id");
-
-                    b.Property<string>("Region")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("region");
-
-                    b.Property<string>("RegionFiasId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("region_fias_id");
-
-                    b.Property<string>("Settlement")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("settlement");
-
-                    b.Property<string>("SettlementFiasId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("settlement_fias_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_address");
-
-                    b.ToTable("address", (string)null);
-                });
 
             modelBuilder.Entity("Domain.Entities.Location", b =>
                 {
@@ -105,8 +36,7 @@ namespace Domain.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("text")
                         .HasColumnName("description");
 
                     b.Property<bool>("IsArchive")
@@ -123,8 +53,7 @@ namespace Domain.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("text")
                         .HasColumnName("name");
 
                     b.Property<int>("Type")
@@ -138,25 +67,9 @@ namespace Domain.Migrations
                     b.HasKey("Id")
                         .HasName("pk_location");
 
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("ix_location_created_at");
-
-                    b.HasIndex("Id")
-                        .IsUnique()
-                        .HasDatabaseName("ix_location_id");
-
-                    b.HasIndex("IsArchive")
-                        .HasDatabaseName("ix_location_is_archive");
-
                     b.HasIndex("Name")
                         .IsUnique()
                         .HasDatabaseName("ix_location_name");
-
-                    b.HasIndex("Type")
-                        .HasDatabaseName("ix_location_type");
-
-                    b.HasIndex("UpdatedAt")
-                        .HasDatabaseName("ix_location_updated_at");
 
                     b.HasIndex("Latitude", "Longitude")
                         .HasDatabaseName("ix_location_latitude_longitude");
