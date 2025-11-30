@@ -17,11 +17,26 @@ import NextAuth from 'next-auth'
         if (account) {
           token.provider = 'keycloak'
           token.accessToken = account.access_token
-        }
+
+          const base64Url = account.access_token?.split('.')[1]
+            const base64 = base64Url?.replace(/-/g, '+').replace(/_/g, '/')
+            const jsonPayload = decodeURIComponent(
+              atob(base64!)
+                .split('')
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+            )
+            
+            const decodedToken = JSON.parse(jsonPayload)
+
+            token.roles = decodedToken.roles || []
+          }
+
         return token
       },
       async session({ session, token }) {
         // Make token fields available on the client
+        session.roles = token.roles;
         session.accessToken = token.accessToken;
         session.user = session.user || {}
         ;(session.user as any).provider = token.provider

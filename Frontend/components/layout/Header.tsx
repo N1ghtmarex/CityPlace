@@ -8,24 +8,6 @@ import { useEffect, useState } from 'react';
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, status } = useSession()
-  const [role, setRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (status == 'authenticated' && role == null) {
-      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/current`, {
-        headers: {
-          Authorization: `Bearer ${session.accessToken}`
-        }
-      })
-      .then(response => {
-        setRole(response.data.role);
-      })
-      .catch(() => {
-        signOut();
-      })
-    }
-  }, [status, session, role]);
-  
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -48,7 +30,7 @@ export default function Header() {
               Главная
             </Link>
             {
-              role == 'Admin' && (
+              session?.roles.includes("Admin") && (
                 <Link 
                   href="/location/new" 
                   className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
