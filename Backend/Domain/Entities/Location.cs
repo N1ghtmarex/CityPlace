@@ -24,9 +24,14 @@ namespace Domain.Entities
         public required LocationType Type { get; set; }
 
         /// <summary>
-        /// Адрес
+        /// Широта (геолокация)
         /// </summary>
-        public required Address Address { get; set; }
+        public required double Latitude { get; set; }
+
+        /// <summary>
+        /// Долгота (геолокация)
+        /// </summary>
+        public required double Longitude { get; set; }
 
         /// <summary>
         /// Изображения локации

@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Models;
+using Application.Mappers;
 using Application.Users.Commands;
 using Core.Exceptions;
 using Domain;
@@ -8,6 +9,7 @@ using Keycloak.Abstractions;
 using Keycloak.Models.KeycloakApiModels;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Application.Users.Handlers
 {
@@ -34,33 +36,21 @@ namespace Application.Users.Handlers
                 await identityService.DeleteUserAsync(externalUser.Id, cancellationToken);
             }
 
-            var createKeycloakUserModel = new CreateKeyckloakUserModel
+            var credentials = new List<Credentials>
             {
-                UserName = request.Body.Username,
-                Email = request.Body.Email,
-                FirstName = request.Body.FirstName,
-                LastName = request.Body.LastName,
-                IsEnabled = true,
-                Credentials =
-                [
-                    new() {
-                        Type = "password",
-                        Value = request.Body.Password,
-                        Temporary = false
-                    }
-                ]
+                new()
+                {
+                    Type = "password",
+                    Value = request.Body.Password,
+                    Temporary = false
+                }
             };
+
+            var createKeycloakUserModel = UserMapper.MapToKeycloakUser(request.Body, credentials);
 
             var keycloakUserId = Guid.Parse(await identityService.CreateUserAsync(createKeycloakUserModel, cancellationToken));
 
-            var userToCreate = new User
-            {
-                ExternalUserId = keycloakUserId,
-                Id = Ulid.NewUlid(),
-                Username = request.Body.Username,
-                Role = UserRole.Admin,
-                CreatedAt = DateTime.UtcNow
-            };
+            var userToCreate = UserMapper.MapToEntity(request.Body, externalUserId: keycloakUserId, role: UserRole.Admin);
 
             var createdUser = await dbContext.AddAsync(userToCreate, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
