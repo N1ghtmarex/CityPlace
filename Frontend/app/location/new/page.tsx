@@ -15,17 +15,15 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { signIn, useSession } from 'next-auth/react';
+import { CreateLocationRequset } from '@/src/models/createLocationRequestModel';
+import { createLocation } from '@/app/services/location.service';
 
 interface LocationFormData {
   title: string;
   description: string;
   type: string;
-  region: string;
-  district: string;
-  city: string;
-  street: string;
-  building: string;
-  block: string;
+  latitude: number;
+  longitude: number;
   images: File[];
 }
 
@@ -39,20 +37,16 @@ export default function NewLocationPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const { data: session, status } = useSession()
-  const [locationTypes, setLocationTypes] = useState<LocationType[]>([])
+  const { data: session, status } = useSession();
+  const [locationTypes, setLocationTypes] = useState<LocationType[]>([]);
+  const [images, setImages] = useState<File[]>([]);
   
-  const [formData, setFormData] = useState<LocationFormData>({
-    title: '',
+  const [formData, setFormData] = useState<CreateLocationRequset>({
+    name: '',
     description: '',
-    type: '',
-    region: '',
-    district: '',
-    city: '',
-    street: '',
-    building: '',
-    block: '0',
-    images: []
+    locationType: '',
+    latitude: 0,
+    longitude: 0
   });
 
   useEffect(() => {
@@ -66,7 +60,7 @@ export default function NewLocationPage() {
     .then(response => {
         setLocationTypes(response.data);
     })
-  }, [locationTypes]);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -98,18 +92,12 @@ export default function NewLocationPage() {
       reader.readAsDataURL(file);
     });
 
-    setFormData(prev => ({
-      ...prev,
-      images: [...prev.images, ...newImages]
-    }));
+    setImages(newImages);
   };
 
   const removeImage = (index: number) => {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
+    setImages(images.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -117,41 +105,11 @@ export default function NewLocationPage() {
     setIsLoading(true);
 
     try {
-      // Здесь будет логика отправки данных на сервер
-      console.log('Form data:', formData);
-      
-      // Имитация загрузки
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/locations?Body.Name=${formData.title}${formData.description != "" ? `&Body.Description=${formData.description}` : ""}&Body.LocationType=${formData.type}&Body.Address.Region=${formData.region}&Body.Address.District=${formData.district}&Body.Address.Settlement=${formData.city}&Body.Address.PlanningStructure=${formData.street}&Body.Address.House=${formData.building}&Body.Address.Appartment=${formData.block}`, {
-      }, {
-        headers: {
-            Authorization: `Bearer ${session!.accessToken}`
-        }
-      })
-      .then(response => {
-        console.log(response);
-        let locationId = response.data.id;
+      const locationId = (await createLocation(formData)).id;
 
-        formData.images.forEach((file, index) => {
-            const formFile = new FormData();
-            formFile.append('Body.File', file);
-
-            axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/picture/locationId/${locationId}`, formFile, {
-            headers: {
-                Authorization: `Bearer ${session!.accessToken}`
-                }
-            })
-            .then(response => {
-                if (index == 0) {
-                    axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/locations/${locationId}/set-avatar/${response.data.id}`, null, {
-                        headers: {
-                            Authorization: `Bearer ${session!.accessToken}`
-                        }
-                    })
-                }
-            })
-        })
-        
-      })
+      images.forEach((file, index) => {
+        // В дальнейшем здесь будет загрузка изображений в MinIO
+      });
       
     } catch (error) {
       console.error('Error creating location:', error);
@@ -163,7 +121,6 @@ export default function NewLocationPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
-        {/* Хедер */}
         <div className="mb-8">
           <button
             onClick={() => router.back()}
@@ -177,7 +134,6 @@ export default function NewLocationPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Основная информация */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center space-x-2">
               <MapPin className="w-5 h-5 text-blue-600" />
@@ -185,35 +141,33 @@ export default function NewLocationPage() {
             </h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Название */}
               <div className="lg:col-span-2">
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                   Название локации *
                 </label>
                 <input
                   type="text"
-                  id="title"
-                  name="title"
+                  id="name"
+                  name="name"
                   required
-                  value={formData.title}
+                  value={formData.name}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-700"
                   placeholder="Введите название локации"
                 />
               </div>
 
-              {/* Тип локации */}
               <div>
-                <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="locationType" className="block text-sm font-medium text-gray-700 mb-2">
                   Тип локации *
                 </label>
                 <div className="relative">
                   <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <select
-                    id="type"
-                    name="type"
+                    id="locationType"
+                    name="locationType"
                     required
-                    value={formData.type}
+                    value={formData.locationType}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white transition-colors text-gray-400"
                   >
@@ -227,7 +181,6 @@ export default function NewLocationPage() {
                 </div>
               </div>
 
-              {/* Описание */}
               <div className="lg:col-span-2">
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                   Описание *
@@ -246,7 +199,6 @@ export default function NewLocationPage() {
             </div>
           </div>
 
-          {/* Адрес */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center space-x-2">
               <Navigation className="w-5 h-5 text-blue-600" />
@@ -254,115 +206,39 @@ export default function NewLocationPage() {
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Регион */}
               <div>
-                <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-2">
-                  Регион *
+                <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-2">
+                  Широта
                 </label>
                 <input
                   type="text"
-                  id="region"
-                  name="region"
+                  id="latitude"
+                  name="latitude"
                   required
-                  value={formData.region}
+                  value={formData.latitude}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-700"
-                  placeholder="Например: Московская область"
+                  placeholder="Широта"
                 />
               </div>
 
-              {/* Район */}
               <div>
-                <label htmlFor="district" className="block text-sm font-medium text-gray-700 mb-2">
-                  Район
+                <label htmlFor="longitude" className="block text-sm font-medium text-gray-700 mb-2">
+                  Долгота
                 </label>
                 <input
                   type="text"
-                  id="district"
-                  name="district"
-                  value={formData.district}
+                  id="longitude"
+                  name="longitude"
+                  value={formData.longitude}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-700"
-                  placeholder="Например: Центральный район"
-                />
-              </div>
-
-              {/* Город */}
-              <div>
-                <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                  Город/Населенный пункт *
-                </label>
-                <div className="relative">
-                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    required
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-700"
-                    placeholder="Например: Москва"
-                  />
-                </div>
-              </div>
-
-              {/* Улица */}
-              <div>
-                <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-2">
-                  Улица *
-                </label>
-                <input
-                  type="text"
-                  id="street"
-                  name="street"
-                  required
-                  value={formData.street}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-700"
-                  placeholder="Например: ул. Пушкина"
-                />
-              </div>
-
-              {/* Дом */}
-              <div>
-                <label htmlFor="building" className="block text-sm font-medium text-gray-700 mb-2">
-                  Дом *
-                </label>
-                <div className="relative">
-                  <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    id="building"
-                    name="building"
-                    required
-                    value={formData.building}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-700"
-                    placeholder="Например: 15"
-                  />
-                </div>
-              </div>
-
-              {/* Корпус */}
-              <div>
-                <label htmlFor="block" className="block text-sm font-medium text-gray-700 mb-2">
-                  Корпус/Строение
-                </label>
-                <input
-                  type="text"
-                  id="block"
-                  name="block"
-                  value={formData.block}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-700"
-                  placeholder="Например: 1А"
+                  placeholder="Долгота"
                 />
               </div>
             </div>
           </div>
 
-          {/* Изображения */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center space-x-2">
               <Image className="w-5 h-5 text-blue-600" />
@@ -370,7 +246,6 @@ export default function NewLocationPage() {
             </h2>
 
             <div className="space-y-4">
-              {/* Загрузка изображений */}
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
                 <input
                   type="file"
@@ -388,7 +263,6 @@ export default function NewLocationPage() {
                 </label>
               </div>
 
-              {/* Превью изображений */}
               {imagePreviews.length > 0 && (
                 <div>
                   <h3 className="text-sm font-medium text-gray-700 mb-3">Загруженные изображения:</h3>
@@ -415,7 +289,6 @@ export default function NewLocationPage() {
             </div>
           </div>
 
-          {/* Кнопки действий */}
           <div className="flex flex-col sm:flex-row gap-4 justify-end pt-6">
             <button
               type="button"

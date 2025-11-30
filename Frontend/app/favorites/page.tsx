@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import LocationCard from '@/components/LocationCard';
 import { Location } from '@/types/location';
-import axios from 'axios';
 import { signIn, useSession } from 'next-auth/react';
+import { getFavoriteLocations } from '../services/location.service';
 
 export default function FavoritesPage() {
   const [favoriteLocations, setFavoriteLocations] = useState<Location[]>([]);
@@ -17,14 +17,8 @@ export default function FavoritesPage() {
 
       const loadFavorites = async () => {
       try {
-        await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/locations/favorite`, {
-          headers: {
-            Authorization: `Bearer ${session?.accessToken}`
-          }
-        })
-        .then(response => {
-          setFavoriteLocations(response.data.items);
-        })
+        const result = await getFavoriteLocations();
+        setFavoriteLocations(result.items);
       } catch (error) {
         console.error('Ошибка загрузки избранного:', error);
       } finally {

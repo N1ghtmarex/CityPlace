@@ -1,5 +1,5 @@
 import { Location } from '@/types/location';
-import axios from 'axios';
+import axiosInstance from '../src/axios';
 import { useSession } from 'next-auth/react';
 import localFont from 'next/font/local';
 import { useEffect, useState } from 'react';
@@ -21,7 +21,7 @@ export default function LocationCard({ location, isFavorite }: LocationCardProps
   }, [isFavorite]);
   
   const favorite = async (id: string) => {
-    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/locations/favorite/${id}`, null, {
+    await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/api/locations/favorite/${id}`, null, {
       headers: {
         Authorization: `Bearer ${session?.accessToken}`
       }

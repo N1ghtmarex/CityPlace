@@ -1,46 +1,35 @@
 "use client"
 import LocationCard from "@/components/LocationCard";
 import { Location } from "@/types/location";
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { getFavoriteLocations, getLocations } from "./services/location.service";
+
 
 export default function HomePage() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
   const [locations, setLocations] = useState<Location[]>([]);
   const [favoriteLocations, setFavoriteLocations] = useState<Location[]>([]);
   const { data: session, status } = useSession()
 
-  const getLocations = async () => {
-    await axios.get(`${apiUrl}/api/locations`)
-      .then(response => {
-        setLocations(response.data.items);
-        console.log(response.data.items);
-      }
-    );
+  const loadLocations = async () => {
+    const result = await getLocations();
+    setLocations(result.items);
   }
 
-  const getFavoriteLocations = async () => {
-    await axios.get(`${apiUrl}/api/locations/favorite`, {
-      headers: {
-        Authorization: `Bearer ${session?.accessToken}`
-      }
-    })
-    .then(response => {
-      setFavoriteLocations(response.data.items);
-      console.log(response.data.items);
-    })
+  const loadFavoriteLocations = async () => {
+    const result = await getFavoriteLocations();
+    setFavoriteLocations(result.items);
   }
 
   useEffect(() => {
-    getLocations();
+    loadLocations();
   }, []);
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      getFavoriteLocations();
+    if (status == 'authenticated') {
+      loadFavoriteLocations();
     }
-  }, [status])
+  }, [session, status])
   
   return (
     <div className="locations-container">

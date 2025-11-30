@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { register } from '../services/register.service';
+import { RegisterRequest } from '@/src/models/registerRequestModel';
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterRequest>({
     firstName: '',
     lastName: '',
     username: '',
@@ -43,39 +44,7 @@ export default function RegisterPage() {
     else {
         
         setIsLoading(true);
-
-        let data = JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          password: formData.password
-        });
-
-        let config = {
-          method: 'post',
-          maxBodyLength: Infinity,
-          url: `${process.env.NEXT_PUBLIC_API_URL}/api/users/registration`,
-          headers: { 
-            'Content-Type': 'application/json'
-          },
-          data : data,
-        };
-
-        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/registration`, {
-          username: formData.username,
-          email: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          password: formData.password
-        })
-        .then((response) => {
-          alert("Успешно")
-        })
-        .catch((error) => {
-          alert(error.response.data.Message ?? "Неизвестная ошибка");
-        });
-
+        await register(formData);
         setIsLoading(false);
     }
   };
