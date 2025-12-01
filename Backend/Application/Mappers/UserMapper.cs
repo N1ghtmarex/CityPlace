@@ -1,4 +1,5 @@
-﻿using Application.Users.Dtos;
+﻿using Application.Pictures.Dtos;
+using Application.Users.Dtos;
 using Domain.Entities;
 using Domain.Enums;
 using Keycloak.Models.KeycloakApiModels;
@@ -10,6 +11,7 @@ namespace Application.Mappers;
 [UseStaticMapper(typeof(GeneralMapper))]
 public static partial class UserMapper
 {
+    [MapProperty(nameof(CreateUserModel.Username), nameof(CreateKeyckloakUserModel.UserName))]
     public static partial CreateKeyckloakUserModel MapToKeycloakUser(CreateUserModel source, List<Credentials> credentials);
 
     [MapValue(nameof(User.Id), Use = nameof(@GeneralMapper.GenerateId))]
