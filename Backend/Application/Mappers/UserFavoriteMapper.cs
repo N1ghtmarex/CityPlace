@@ -15,6 +15,7 @@ public static partial class UserFavoriteMapper
     [MapProperty(nameof(UserFavorite.Location.LocationPictures), nameof(LocationViewModel.Pictures))]
     [MapProperty(nameof(UserFavorite.Location.Latitude), nameof(LocationViewModel.Latitude))]
     [MapProperty(nameof(UserFavorite.Location.Longitude), nameof(LocationViewModel.Longitude))]
+    [MapProperty(nameof(UserFavorite.Location.Id), nameof(LocationViewModel.Id))]
     public static partial LocationListViewModel ProjectToListViewModel(UserFavorite source);
 
     public static partial List<LocationListViewModel> MapToListViewModel(List<UserFavorite> source);

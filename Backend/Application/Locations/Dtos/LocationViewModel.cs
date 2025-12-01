@@ -26,7 +26,7 @@ namespace Application.Locations.Dtos
         /// <summary>
         /// Тип
         /// </summary>
-        public required LocationType Type { get; init; }
+        public required string Type { get; init; }
 
         /// <summary>
         /// Широта (геолокация)

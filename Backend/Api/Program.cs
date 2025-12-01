@@ -9,7 +9,9 @@ using Domain;
 using Infrastructure;
 using Keycloak;
 using Keycloak.Configurations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,7 +41,16 @@ builder.Services.ConfigureSwagger();
 
 builder.Services.AddScoped<ICurrentHttpContextAccessor, CurrentHttpContextAccessor>();
 
+builder.Services.AddCors(o => o.AddPolicy("ReactPolicy", builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+}));
+
 var app = builder.Build();
+
+app.UseStaticFiles();
 
 app.SetConnectionStringEnvironment(app.Configuration.GetConnectionString("DbConnection"));
 
@@ -49,10 +60,13 @@ app.MigrateDb();
 
 app.ConfigureSwaggerUI();
 
+app.UseCors("ReactPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<ContextSetterMiddleware>();
+
 
 app.Run();

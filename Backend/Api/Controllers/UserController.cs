@@ -51,5 +51,17 @@ namespace Api.Controllers
         {
             return await sender.Send(query, cancellationToken);
         }
+
+        /// <summary>
+        /// Получение информации о текущем пользователе
+        /// </summary>
+        /// <param name="query">Модель запроса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        [HttpGet("current")]
+        public async Task<UserViewModel> GetCurrentUser([FromQuery] GetCurrentUserQuery query, CancellationToken cancellationToken)
+        {
+            return await sender.Send(query, cancellationToken);
+        }
     }
 }
