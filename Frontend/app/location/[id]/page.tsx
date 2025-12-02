@@ -80,50 +80,13 @@ export default function LocationPage({ params }: Props) {
                 </div>
             </nav>
 
-
-
-
-
-
-
-
-
-            <Gallery pictures={location.pictures} >
-
-            </Gallery>
-
-
-
-
-
-
-
-
-            
-
+            <Gallery pictures={location.pictures}></Gallery>
             <div className="container mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Основной контент */}
                     <div className="lg:col-span-2">
-                        {/* Галерея изображений */}
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
-                            <div className="grid grid-cols-2 gap-2 p-2">
-                                <div className="col-span-2">
-                                    <img src={`${process.env.NEXT_PUBLIC_API_URL}/${location.pictures.filter(x => x.isAvatar == true)[0]?.path}`} 
-                                        className="w-full h-80 object-cover rounded-lg"/>
-                                </div>
-                                {location.pictures.slice(1, 5).map((picture, index) => (
-                                <img 
-                                    key={index}
-                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${picture.path}`}
-                                    className="w-full h-40 object-cover rounded-lg"
-                                />
-                            ))}
-                            </div>
-                        </div>
-
                         {/* Основная информация */}
-                        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 h-full">
                             <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <h1 className="text-3xl font-bold text-gray-800 mb-2">{location.name}</h1>
